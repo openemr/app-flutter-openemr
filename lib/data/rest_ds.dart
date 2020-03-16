@@ -5,11 +5,10 @@ import 'package:openemr/models/user.dart';
 
 class RestDatasource {
   NetworkUtil _netUtil = new NetworkUtil();
-  static final BASE_URL = "http://192.168.225.75";
-  static final LOGIN_URL = BASE_URL + "/apis/api/auth";
+  static final LOGIN_URL = "/apis/api/auth";
 
-  Future<User> login(String username, String password) {
-    return _netUtil.post(LOGIN_URL, body: {
+  Future<User> login(String username, String password, String url) {
+    return _netUtil.post(url+LOGIN_URL, body: {
       "grant_type": "password",
       "username": username,
       "password": password,

@@ -22,7 +22,7 @@ class LoginScreenState extends State<LoginScreen>
   bool _isLoading = false;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _username, _password;
+  String _username, _password, _url;
 
   LoginScreenPresenter _presenter;
 
@@ -38,7 +38,7 @@ class LoginScreenState extends State<LoginScreen>
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      _presenter.doLogin(_username, _password);
+      _presenter.doLogin(_username, _password, _url);
     }
   }
 
@@ -53,29 +53,29 @@ class LoginScreenState extends State<LoginScreen>
       Navigator.of(_ctx).pushReplacementNamed("/home");
   }
   var _value = "en";
-      DropdownButton _normalDown() => DropdownButton<String>(
-          items: [
-            DropdownMenuItem(
-              value: "en",
-              child: Text(
-                "English",
-              ),
+  DropdownButton _normalDown() => DropdownButton<String>(
+        items: [
+          DropdownMenuItem(
+            value: "en",
+            child: Text(
+              "English",
             ),
-            DropdownMenuItem(
-              value: "ar",
-              child: Text(
-                "Arabic",
-              ),
+          ),
+          DropdownMenuItem(
+            value: "ar",
+            child: Text(
+              "Arabic",
             ),
-          ],
-          onChanged: (value) {
-            MyApp.setLocale(context, Locale(value));
-            setState(() {
-              _value = value;
-            });
-          },
-          value: _value,
-        );
+          ),
+        ],
+        onChanged: (value) {
+          MyApp.setLocale(context, Locale(value));
+          setState(() {
+            _value = value;
+          });
+        },
+        value: _value,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -101,20 +101,30 @@ class LoginScreenState extends State<LoginScreen>
                         ? "Username must have atleast 12 chars"
                         : null;
                   },
-                  decoration: new InputDecoration(labelText: MyLocalizations.of(context, 'Username')),
+                  decoration: new InputDecoration(
+                      labelText: MyLocalizations.of(context, 'Username')),
                 ),
               ),
               new Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: new TextFormField(
                   onSaved: (val) => _password = val,
-                  decoration: new InputDecoration(labelText: MyLocalizations.of(context, 'Password')),
-                  // obscureText: true,
+                  decoration: new InputDecoration(
+                      labelText: MyLocalizations.of(context, 'Password')),
+                  obscureText: true,
                   validator: (val) {
                     return val.length < 10
                         ? "Password must have atleast 12 chars"
                         : null;
                   },
+                ),
+              ),
+              new Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new TextFormField(
+                  onSaved: (val) => _url = val,
+                  decoration: new InputDecoration(
+                      labelText: MyLocalizations.of(context, 'URL')),
                 ),
               ),
               _normalDown()
@@ -140,7 +150,7 @@ class LoginScreenState extends State<LoginScreen>
               filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: new Container(
                 child: loginForm,
-                height: 450.0,
+                height: 490.0,
                 width: 400.0,
                 padding: EdgeInsets.all(16.0),
                 decoration: new BoxDecoration(
