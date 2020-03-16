@@ -1,16 +1,22 @@
-# openemr
+# OpenEMR
 
-A new Flutter project.
+[OpenEMR](https://open-emr.org) is the most popular open source electronic health records and medical practice management solution. [ONC certified](https://open-emr.org/wiki/index.php/OpenEMR_Wiki_Home_Page#ONC_Ambulatory_EHR_Certification) with international usage, OpenEMR's goal is a superior alternative to its proprietary counterparts.
 
-## Getting Started
+### For Developers
 
-This project is a starting point for a Flutter application.
+If using OpenEMR directly from the code repository, then the following commands will build OpenEMR apk :
 
-A few resources to get you started if this is your first Flutter project:
+```shell
+pub get
+flutter build apk|appbundle|ios|ios-framework
+```
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+To run openemr in a device
+```shell
+pub get
+flutter run
+```
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### License
+
+[GNU GPL](LICENSE)
