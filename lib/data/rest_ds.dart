@@ -14,7 +14,6 @@ class RestDatasource {
       "password": password,
       "scope": "default"
     }).then((dynamic res) {
-      // print(res.toString());
       if(res == null) throw new Exception("Invalid Login Credentials");
       res['username'] = username;
       return new User.map(res);

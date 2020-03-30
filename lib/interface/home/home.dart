@@ -208,21 +208,25 @@ class HomeScreen extends StatelessWidget {
                             children: <Widget>[
                               Card(
                                   elevation: 5,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        FaIcon(
-                                          FontAwesomeIcons.qrcode,
-                                          color: Colors.pink,
-                                          size: 70.0,
-                                          semanticLabel: 'Scan QR/Barcode',
+                                  child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(_ctx).pushNamed("/qrCode");
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            FaIcon(
+                                              FontAwesomeIcons.qrcode,
+                                              color: Colors.pink,
+                                              size: 70.0,
+                                              semanticLabel: 'Scan QR/Barcode',
+                                            ),
+                                            Text("Scan QR/Barcode",
+                                                style: TextStyle(fontSize: 16)),
+                                          ],
                                         ),
-                                        Text("Scan QR/Barcode",
-                                            style: TextStyle(fontSize: 16)),
-                                      ],
-                                    ),
-                                  )),
+                                      ))),
                               Card(
                                   elevation: 5,
                                   child: Padding(
