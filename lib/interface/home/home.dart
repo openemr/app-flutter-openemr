@@ -210,7 +210,7 @@ class HomeScreen extends StatelessWidget {
                                   elevation: 5,
                                   child: InkWell(
                                       onTap: () {
-                                        Navigator.of(_ctx).pushNamed("/qrCode");
+                                        Navigator.of(context).pushNamed("/qrCode");
                                       },
                                       child: Padding(
                                         padding: EdgeInsets.all(10.0),
