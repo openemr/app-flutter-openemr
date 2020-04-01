@@ -10,7 +10,7 @@ class PatientList extends StatefulWidget {
 
 class _MyAppState extends State<PatientList> implements PatientListContract {
   PatientListPresenter _presenter;
-  
+
   List<Patient> patientList = new List<Patient>();
   _MyAppState() {
     _presenter = new PatientListPresenter(this);
@@ -36,7 +36,9 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   FaIcon(
-                    FontAwesomeIcons.female,
+                    pat.sex == "Female"
+                        ? FontAwesomeIcons.female
+                        : FontAwesomeIcons.male,
                     color: Colors.grey,
                     size: 70.0,
                     semanticLabel: 'Patient List',
