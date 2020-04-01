@@ -31,7 +31,7 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-    "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT)");
+    "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT, baseUrl TEXT)");
     print("Created tables");
   }
 
@@ -50,7 +50,19 @@ class DatabaseHelper {
   Future<bool> isLoggedIn() async {
     var dbClient = await db;
     var res = await dbClient.query("User");
+    print(res);
     return res.length > 0? true: false;
   }
 
+  Future<String> getBaseUrl() async {
+    var dbClient = await db;
+    var res = await dbClient.query("User",columns: ["baseUrl"]);
+    return res[0]["baseUrl"];
+  }
+
+  Future<String> getToken() async {
+    var dbClient = await db;
+    var res = await dbClient.query("User",columns: ["tokenType","accessToken"]);
+    return (res[0]["tokenType"]+" "+res[0]["accessToken"]);
+  }
 }

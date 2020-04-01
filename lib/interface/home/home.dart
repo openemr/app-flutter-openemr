@@ -30,38 +30,45 @@ class HomeScreen extends StatelessWidget {
                             children: <Widget>[
                               Card(
                                   elevation: 5,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        FaIcon(
-                                          FontAwesomeIcons.plusCircle,
-                                          color: Colors.pink,
-                                          size: 70.0,
-                                          semanticLabel: 'Add New Patient',
+                                  child: InkWell(
+                                      onTap: () {},
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            FaIcon(
+                                              FontAwesomeIcons.plusCircle,
+                                              color: Colors.pink,
+                                              size: 70.0,
+                                              semanticLabel: 'Add New Patient',
+                                            ),
+                                            Text("Add New Patient",
+                                                style: TextStyle(fontSize: 16)),
+                                          ],
                                         ),
-                                        Text("Add New Patient",
-                                            style: TextStyle(fontSize: 16)),
-                                      ],
-                                    ),
-                                  )),
+                                      ))),
                               Card(
                                   elevation: 5,
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        FaIcon(
-                                          FontAwesomeIcons.waze,
-                                          color: Colors.grey,
-                                          size: 70.0,
-                                          semanticLabel: 'Coming Soon',
+                                  child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed("/patientList");
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            FaIcon(
+                                              FontAwesomeIcons.userAstronaut,
+                                              color: Colors.pink,
+                                              size: 70.0,
+                                              semanticLabel: 'Patient List',
+                                            ),
+                                            Text("Patient List",
+                                                style: TextStyle(fontSize: 16)),
+                                          ],
                                         ),
-                                        Text("Coming soon",
-                                            style: TextStyle(fontSize: 16)),
-                                      ],
-                                    ),
-                                  )),
+                                      ))),
                               Card(
                                   elevation: 5,
                                   child: Padding(
@@ -210,7 +217,8 @@ class HomeScreen extends StatelessWidget {
                                   elevation: 5,
                                   child: InkWell(
                                       onTap: () {
-                                        Navigator.of(context).pushNamed("/qrCode");
+                                        Navigator.of(context)
+                                            .pushNamed("/qrCode");
                                       },
                                       child: Padding(
                                         padding: EdgeInsets.all(10.0),
