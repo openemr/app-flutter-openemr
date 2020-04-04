@@ -94,7 +94,7 @@ class Patient {
     this._username = obj["username"];
     this._city = obj["city"];
     this._country_code = obj["country_code"];
-    this._dob = obj["dob"];
+    this._dob = obj["DOB"];
     this._ethnicity = obj["ethnicity"];
     this._fname = obj["fname"];
     this._id = obj["id"];
@@ -120,7 +120,7 @@ class Patient {
     map["username"] = _username;
     map["city"] = _city;
     map["country_code"] = _country_code;
-    map["dob"] = _dob;
+    map["DOB"] = _dob;
     map["ethnicity"] = _ethnicity;
     map["fname"] = _fname;
     map["id"] = _id;
