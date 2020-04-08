@@ -7,13 +7,13 @@
 If using OpenEMR directly from the code repository, then the following commands will build OpenEMR apk :
 
 ```shell
-pub get
+flutter pub get
 flutter build apk|appbundle|ios|ios-framework
 ```
 
 To run openemr in a device
 ```shell
-pub get
+flutter pub get
 flutter run
 ```
 
