@@ -49,22 +49,33 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   onAuthStateChanged(AuthState state) {
-    if(state == AuthState.LOGGED_IN)
+    if (state == AuthState.LOGGED_IN)
       Navigator.of(_ctx).pushReplacementNamed("/home");
   }
+
   var _value = "en";
   DropdownButton _normalDown() => DropdownButton<String>(
+        underline: Container(
+          height: 2,
+          color: Colors.lightBlue,
+        ),
         items: [
           DropdownMenuItem(
             value: "en",
-            child: Text(
-              "English",
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Text(
+                "English",
+              ),
             ),
           ),
           DropdownMenuItem(
             value: "ar",
-            child: Text(
-              "Arabic",
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Text(
+                "Arabic",
+              ),
             ),
           ),
         ],
@@ -80,19 +91,24 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     _ctx = context;
-    var loginBtn = new RaisedButton(
-      onPressed: _submit,
-      child: new Text(MyLocalizations.of(context, 'LOGIN')),
-      color: Colors.primaries[0],
+    var loginBtn = ButtonTheme(
+      minWidth: MediaQuery.of(context).size.width * 0.5,
+      child: new RaisedButton(
+        onPressed: _submit,
+        child: new Text(MyLocalizations.of(context, 'LOGIN')),
+        color: Colors.lightBlue,
+      ),
     );
-    var loginForm = new Column(
+    var loginForm = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
         new Form(
           key: formKey,
           child: new Column(
             children: <Widget>[
-              new Padding(
+              Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: new TextFormField(
                   onSaved: (val) => _username = val,
@@ -102,7 +118,9 @@ class LoginScreenState extends State<LoginScreen>
                         : null;
                   },
                   decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'Username')),
+                    labelText: MyLocalizations.of(context, 'Username'),
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
               new Padding(
@@ -110,7 +128,9 @@ class LoginScreenState extends State<LoginScreen>
                 child: new TextFormField(
                   onSaved: (val) => _password = val,
                   decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'Password')),
+                    labelText: MyLocalizations.of(context, 'Password'),
+                    border: OutlineInputBorder(),
+                  ),
                   obscureText: true,
                   validator: (val) {
                     return val.length < 10
@@ -124,40 +144,29 @@ class LoginScreenState extends State<LoginScreen>
                 child: new TextFormField(
                   onSaved: (val) => _url = val,
                   decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'URL')),
+                    labelText: MyLocalizations.of(context, 'URL'),
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
-              _normalDown()
+              _normalDown(),
+              SizedBox(
+                height: 15,
+              )
             ],
           ),
         ),
         _isLoading ? new CircularProgressIndicator() : loginBtn
       ],
-      crossAxisAlignment: CrossAxisAlignment.center,
     );
 
     return new Scaffold(
       appBar: null,
       key: scaffoldKey,
-      body: new Container(
-        decoration: new BoxDecoration(
-          image: new DecorationImage(
-              image: new AssetImage("assets/images/bg.png"), fit: BoxFit.cover),
-        ),
-        child: new Center(
-          child: new ClipRect(
-            child: new BackdropFilter(
-              filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: new Container(
-                child: loginForm,
-                height: 490.0,
-                width: 400.0,
-                padding: EdgeInsets.all(16.0),
-                decoration: new BoxDecoration(
-                    color: Colors.teal.shade200.withOpacity(0.5)),
-              ),
-            ),
-          ),
+      body: new Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: loginForm,
         ),
       ),
     );
