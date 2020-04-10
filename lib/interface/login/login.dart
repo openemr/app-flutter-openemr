@@ -57,13 +57,13 @@ class LoginScreenState extends State<LoginScreen>
   DropdownButton _normalDown() => DropdownButton<String>(
         underline: Container(
           height: 2,
-          color: Colors.lightBlue,
+          color: Theme.of(context).primaryColor,
         ),
         items: [
           DropdownMenuItem(
             value: "en",
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+            child: AspectRatio(
+              aspectRatio: 4 / 1,
               child: Text(
                 "English",
               ),
@@ -71,8 +71,8 @@ class LoginScreenState extends State<LoginScreen>
           ),
           DropdownMenuItem(
             value: "ar",
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.5,
+            child: AspectRatio(
+              aspectRatio: 4 / 1,
               child: Text(
                 "Arabic",
               ),
@@ -91,82 +91,79 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     _ctx = context;
-    var loginBtn = ButtonTheme(
-      minWidth: MediaQuery.of(context).size.width * 0.5,
+    var loginBtn = AspectRatio(
+      aspectRatio: 15 / 2,
       child: new RaisedButton(
         onPressed: _submit,
         child: new Text(MyLocalizations.of(context, 'LOGIN')),
-        color: Colors.lightBlue,
+        color: Theme.of(context).primaryColor,
       ),
     );
-    var loginForm = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
-        new Form(
-          key: formKey,
-          child: new Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _username = val,
-                  validator: (val) {
-                    return val.length < 10
-                        ? "Username must have atleast 12 chars"
-                        : null;
-                  },
-                  decoration: new InputDecoration(
-                    labelText: MyLocalizations.of(context, 'Username'),
-                    border: OutlineInputBorder(),
-                  ),
+    var loginForm = <Widget>[
+      new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
+      new Form(
+        key: formKey,
+        child: new Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _username = val,
+                validator: (val) {
+                  return val.length < 10
+                      ? "Username must have atleast 12 chars"
+                      : null;
+                },
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Username'),
+                  border: OutlineInputBorder(),
                 ),
               ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _password = val,
-                  decoration: new InputDecoration(
-                    labelText: MyLocalizations.of(context, 'Password'),
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                  validator: (val) {
-                    return val.length < 10
-                        ? "Password must have atleast 12 chars"
-                        : null;
-                  },
+            ),
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _password = val,
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Password'),
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+                validator: (val) {
+                  return val.length < 10
+                      ? "Password must have atleast 12 chars"
+                      : null;
+                },
+              ),
+            ),
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _url = val,
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'URL'),
+                  border: OutlineInputBorder(),
                 ),
               ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _url = val,
-                  decoration: new InputDecoration(
-                    labelText: MyLocalizations.of(context, 'URL'),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              _normalDown(),
-              SizedBox(
-                height: 15,
-              )
-            ],
-          ),
+            ),
+            _normalDown(),
+            SizedBox(
+              height: 15,
+            )
+          ],
         ),
-        _isLoading ? new CircularProgressIndicator() : loginBtn
-      ],
-    );
+      ),
+      _isLoading ? new CircularProgressIndicator() : loginBtn
+    ];
 
     return new Scaffold(
       appBar: null,
       key: scaffoldKey,
-      body: new Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: loginForm,
+      body: Container(
+        padding: const EdgeInsets.all(12), 
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: loginForm,
         ),
       ),
     );
