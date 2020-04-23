@@ -54,6 +54,8 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   var _value = "en";
+  static const ar_dropdown = 4 / 1;
+  static const ar_btn = 4 / 1;
   DropdownButton _normalDown() => DropdownButton<String>(
         underline: Container(
           height: 2,
@@ -63,7 +65,7 @@ class LoginScreenState extends State<LoginScreen>
           DropdownMenuItem(
             value: "en",
             child: AspectRatio(
-              aspectRatio: 4 / 1,
+              aspectRatio: ar_dropdown,
               child: Text(
                 "English",
               ),
@@ -72,7 +74,7 @@ class LoginScreenState extends State<LoginScreen>
           DropdownMenuItem(
             value: "ar",
             child: AspectRatio(
-              aspectRatio: 4 / 1,
+              aspectRatio: ar_dropdown,
               child: Text(
                 "Arabic",
               ),
@@ -92,7 +94,7 @@ class LoginScreenState extends State<LoginScreen>
   Widget build(BuildContext context) {
     _ctx = context;
     var loginBtn = AspectRatio(
-      aspectRatio: 15 / 2,
+      aspectRatio: ar_btn,
       child: new RaisedButton(
         onPressed: _submit,
         child: new Text(MyLocalizations.of(context, 'LOGIN')),
