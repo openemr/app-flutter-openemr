@@ -49,22 +49,35 @@ class LoginScreenState extends State<LoginScreen>
 
   @override
   onAuthStateChanged(AuthState state) {
-    if(state == AuthState.LOGGED_IN)
+    if (state == AuthState.LOGGED_IN)
       Navigator.of(_ctx).pushReplacementNamed("/home");
   }
+
   var _value = "en";
+  static const ar_dropdown = 4 / 1;
+  static const ar_btn = 4 / 1;
   DropdownButton _normalDown() => DropdownButton<String>(
+        underline: Container(
+          height: 2,
+          color: Theme.of(context).primaryColor,
+        ),
         items: [
           DropdownMenuItem(
             value: "en",
-            child: Text(
-              "English",
+            child: AspectRatio(
+              aspectRatio: ar_dropdown,
+              child: Text(
+                "English",
+              ),
             ),
           ),
           DropdownMenuItem(
             value: "ar",
-            child: Text(
-              "Arabic",
+            child: AspectRatio(
+              aspectRatio: ar_dropdown,
+              child: Text(
+                "Arabic",
+              ),
             ),
           ),
         ],
@@ -80,84 +93,79 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     _ctx = context;
-    var loginBtn = new RaisedButton(
-      onPressed: _submit,
-      child: new Text(MyLocalizations.of(context, 'LOGIN')),
-      color: Colors.primaries[0],
+    var loginBtn = AspectRatio(
+      aspectRatio: ar_btn,
+      child: new RaisedButton(
+        onPressed: _submit,
+        child: new Text(MyLocalizations.of(context, 'LOGIN')),
+        color: Theme.of(context).primaryColor,
+      ),
     );
-    var loginForm = new Column(
-      children: <Widget>[
-        new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
-        new Form(
-          key: formKey,
-          child: new Column(
-            children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _username = val,
-                  validator: (val) {
-                    return val.length < 10
-                        ? "Username must have atleast 12 chars"
-                        : null;
-                  },
-                  decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'Username')),
+    var loginForm = <Widget>[
+      new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
+      new Form(
+        key: formKey,
+        child: new Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _username = val,
+                validator: (val) {
+                  return val.length < 10
+                      ? "Username must have atleast 12 chars"
+                      : null;
+                },
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Username'),
+                  border: OutlineInputBorder(),
                 ),
               ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _password = val,
-                  decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'Password')),
-                  obscureText: true,
-                  validator: (val) {
-                    return val.length < 10
-                        ? "Password must have atleast 12 chars"
-                        : null;
-                  },
+            ),
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _password = val,
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Password'),
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+                validator: (val) {
+                  return val.length < 10
+                      ? "Password must have atleast 12 chars"
+                      : null;
+                },
+              ),
+            ),
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextFormField(
+                onSaved: (val) => _url = val,
+                decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'URL'),
+                  border: OutlineInputBorder(),
                 ),
               ),
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextFormField(
-                  onSaved: (val) => _url = val,
-                  decoration: new InputDecoration(
-                      labelText: MyLocalizations.of(context, 'URL')),
-                ),
-              ),
-              _normalDown()
-            ],
-          ),
+            ),
+            _normalDown(),
+            SizedBox(
+              height: 15,
+            )
+          ],
         ),
-        _isLoading ? new CircularProgressIndicator() : loginBtn
-      ],
-      crossAxisAlignment: CrossAxisAlignment.center,
-    );
+      ),
+      _isLoading ? new CircularProgressIndicator() : loginBtn
+    ];
 
     return new Scaffold(
       appBar: null,
       key: scaffoldKey,
-      body: new Container(
-        decoration: new BoxDecoration(
-          image: new DecorationImage(
-              image: new AssetImage("assets/images/bg.png"), fit: BoxFit.cover),
-        ),
-        child: new Center(
-          child: new ClipRect(
-            child: new BackdropFilter(
-              filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: new Container(
-                child: loginForm,
-                height: 490.0,
-                width: 400.0,
-                padding: EdgeInsets.all(16.0),
-                decoration: new BoxDecoration(
-                    color: Colors.teal.shade200.withOpacity(0.5)),
-              ),
-            ),
-          ),
+      body: Container(
+        padding: const EdgeInsets.all(12), 
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: loginForm,
         ),
       ),
     );
