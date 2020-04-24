@@ -55,7 +55,7 @@ class LoginScreenState extends State<LoginScreen>
 
   var _value = "en";
   static const ar_dropdown = 4 / 1;
-  static const ar_btn = 4 / 1;
+  static const ar_btn = 15 / 2 ;
   DropdownButton _normalDown() => DropdownButton<String>(
         underline: Container(
           height: 2,
