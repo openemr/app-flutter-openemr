@@ -12,6 +12,7 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
   TextEditingController editingController = TextEditingController();
   PatientListPresenter _presenter;
   String filterQuery = "";
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   List<Patient> patientList = new List<Patient>();
 
@@ -51,6 +52,11 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
     }
   }
 
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
   @override
   Widget build(BuildContext context) {
     List<List<Patient>> filteredList = filterSearchResults(filterQuery);
@@ -72,6 +78,7 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
           }
         },
         child: Scaffold(
+            key: scaffoldKey,
             appBar: new AppBar(
               automaticallyImplyLeading: true,
               title: new Text('Patient List'),
@@ -124,7 +131,7 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
                                   pat.sex == "Female"
                                       ? FontAwesomeIcons.female
                                       : FontAwesomeIcons.male,
-                                  color: Colors.grey,
+                                  color: Theme.of(context).disabledColor,
                                   size: 70.0,
                                   semanticLabel: 'Patient List',
                                 ),
@@ -155,8 +162,12 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
                                                       child: FaIcon(
                                                         FontAwesomeIcons
                                                             .phoneAlt,
-                                                        color: Colors.blue,
-                                                        size: 20.0,
+                                                        color: Theme.of(context)
+                                                            .iconTheme
+                                                            .color,
+                                                        size: Theme.of(context)
+                                                            .iconTheme
+                                                            .size,
                                                         semanticLabel:
                                                             'Home Phone',
                                                       )),
@@ -183,8 +194,12 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
                                                       child: FaIcon(
                                                         FontAwesomeIcons
                                                             .calendar,
-                                                        color: Colors.blue,
-                                                        size: 20.0,
+                                                        color: Theme.of(context)
+                                                            .iconTheme
+                                                            .color,
+                                                        size: Theme.of(context)
+                                                            .iconTheme
+                                                            .size,
                                                         semanticLabel:
                                                             'Date of Birth',
                                                       )),
@@ -217,5 +232,9 @@ class _MyAppState extends State<PatientList> implements PatientListContract {
     setState(() {
       patientList = list;
     });
+  }
+
+  void onError(String errorTxt) {
+    _showSnackBar(errorTxt);
   }
 }

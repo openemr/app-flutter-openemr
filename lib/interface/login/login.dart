@@ -55,11 +55,11 @@ class LoginScreenState extends State<LoginScreen>
 
   var _value = "en";
   static const ar_dropdown = 4 / 1;
-  static const ar_btn = 15 / 2 ;
+  static const ar_btn = 15 / 2;
   DropdownButton _normalDown() => DropdownButton<String>(
         underline: Container(
           height: 2,
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).textSelectionColor,
         ),
         items: [
           DropdownMenuItem(
@@ -98,7 +98,7 @@ class LoginScreenState extends State<LoginScreen>
       child: new RaisedButton(
         onPressed: _submit,
         child: new Text(MyLocalizations.of(context, 'LOGIN')),
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).buttonColor,
       ),
     );
     var loginForm = <Widget>[
@@ -111,11 +111,6 @@ class LoginScreenState extends State<LoginScreen>
               padding: const EdgeInsets.all(8.0),
               child: new TextFormField(
                 onSaved: (val) => _username = val,
-                validator: (val) {
-                  return val.length < 10
-                      ? "Username must have atleast 12 chars"
-                      : null;
-                },
                 decoration: new InputDecoration(
                   labelText: MyLocalizations.of(context, 'Username'),
                   border: OutlineInputBorder(),
@@ -131,11 +126,6 @@ class LoginScreenState extends State<LoginScreen>
                   border: OutlineInputBorder(),
                 ),
                 obscureText: true,
-                validator: (val) {
-                  return val.length < 10
-                      ? "Password must have atleast 12 chars"
-                      : null;
-                },
               ),
             ),
             new Padding(
@@ -144,6 +134,7 @@ class LoginScreenState extends State<LoginScreen>
                 onSaved: (val) => _url = val,
                 decoration: new InputDecoration(
                   labelText: MyLocalizations.of(context, 'URL'),
+                  hintText: "http://example.com",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -162,7 +153,7 @@ class LoginScreenState extends State<LoginScreen>
       appBar: null,
       key: scaffoldKey,
       body: Container(
-        padding: const EdgeInsets.all(12), 
+        padding: const EdgeInsets.all(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: loginForm,

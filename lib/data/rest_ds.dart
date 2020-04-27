@@ -14,21 +14,23 @@ class RestDatasource {
     initState();
   }
   void initState() async {
-    baseUrl = await db.getBaseUrl();
-    token = await db.getToken();
+    if (await db.isLoggedIn()) {
+      baseUrl = await db.getBaseUrl();
+      token = await db.getToken();
+    }
   }
 
   NetworkUtil _netUtil = new NetworkUtil();
   static final LOGIN_URL = "/apis/api/auth";
 
   Future<User> login(String username, String password, String url) {
-    return _netUtil.post(url+LOGIN_URL, body: {
+    return _netUtil.post(url + LOGIN_URL, body: {
       "grant_type": "password",
       "username": username,
       "password": password,
       "scope": "default"
     }).then((dynamic res) {
-      if(res == null) throw new Exception("Invalid Login Credentials");
+      if (res == null) throw new Exception("Invalid Login Credentials");
       res['username'] = username;
       res['baseUrl'] = url;
       return new User.map(res);
