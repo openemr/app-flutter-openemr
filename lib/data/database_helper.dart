@@ -13,8 +13,7 @@ class DatabaseHelper {
   static Database _db;
 
   Future<Database> get db async {
-    if(_db != null)
-      return _db;
+    if (_db != null) return _db;
     _db = await initDb();
     return _db;
   }
@@ -27,11 +26,10 @@ class DatabaseHelper {
     var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
     return theDb;
   }
-  
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-    "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT, baseUrl TEXT)");
+        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT, baseUrl TEXT)");
     print("Created tables");
   }
 
@@ -50,19 +48,21 @@ class DatabaseHelper {
   Future<bool> isLoggedIn() async {
     var dbClient = await db;
     var res = await dbClient.query("User");
-    print(res);
-    return res.length > 0? true: false;
+    return res.isNotEmpty;
   }
 
   Future<String> getBaseUrl() async {
     var dbClient = await db;
-    var res = await dbClient.query("User",columns: ["baseUrl"]);
-    return res[0]["baseUrl"];
+    var res = await dbClient.query("User", columns: ["baseUrl"]);
+    return res.isEmpty ? null : res[0]["baseUrl"];
   }
 
   Future<String> getToken() async {
     var dbClient = await db;
-    var res = await dbClient.query("User",columns: ["tokenType","accessToken"]);
-    return (res[0]["tokenType"]+" "+res[0]["accessToken"]);
+    var res =
+        await dbClient.query("User", columns: ["tokenType", "accessToken"]);
+    return res.isEmpty
+        ? null
+        : res[0]["tokenType"] + " " + res[0]["accessToken"];
   }
 }

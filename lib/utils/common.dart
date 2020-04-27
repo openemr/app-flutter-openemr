@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void showToast(BuildContext context,String msg) {
-    final scaffold = Scaffold.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-      ),
-    );
+void showToast(BuildContext context, String msg) {
+  final scaffold = Scaffold.of(context);
+  scaffold.showSnackBar(
+    SnackBar(
+      content: Text(msg),
+    ),
+  );
 }
 
 void launchURL(url) async {
@@ -18,3 +18,6 @@ void launchURL(url) async {
   }
 }
 
+bool isValidUrl(url) {
+  return Uri.parse(url).isAbsolute;
+}
