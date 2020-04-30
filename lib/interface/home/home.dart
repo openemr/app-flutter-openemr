@@ -9,6 +9,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isCollapsed = true;
+  double radius = 0;
   double screenHight, screenWidth;
   final Duration duration = const Duration(milliseconds: 300);
 
@@ -86,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       left: isCollapsed ? 0 : 0.250 * screenWidth,
       right: isCollapsed ? 0 : -0.2 * screenWidth,
       child: Material(
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+        borderRadius: BorderRadius.all(Radius.circular(radius)),
         elevation: 8,
         color: Colors.white,
         child: Container(
@@ -97,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppBar(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+                      top: Radius.circular(radius),
                     ),
                   ),
                   leading: InkWell(
@@ -107,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         setState(() {
                           isCollapsed = !isCollapsed;
+                          radius = isCollapsed ?  0 :  20;
                         });
                       }),
                   title: Text("OpenEMR"),
