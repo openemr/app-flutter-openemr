@@ -88,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
       right: isCollapsed ? 0 : -0.2 * screenWidth,
       child: Material(
         borderRadius: BorderRadius.all(Radius.circular(radius)),
-        elevation: 8,
         color: Colors.white,
         child: Container(
           child: Column(
