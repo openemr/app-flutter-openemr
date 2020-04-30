@@ -71,6 +71,28 @@ class HomeScreen extends StatelessWidget {
                                       ))),
                               Card(
                                   elevation: 5,
+                                  child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed("/heartRate");
+                                      },
+                                      child: Padding(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          children: <Widget>[
+                                            FaIcon(
+                                              FontAwesomeIcons.heartbeat,
+                                              color: Colors.pink,
+                                              size: 70.0,
+                                              semanticLabel: 'Heart Rate',
+                                            ),
+                                            Text("Heart Rate",
+                                                style: TextStyle(fontSize: 16)),
+                                          ],
+                                        ),
+                                      ))),
+                              Card(
+                                  elevation: 5,
                                   child: Padding(
                                     padding: EdgeInsets.all(10.0),
                                     child: Column(
