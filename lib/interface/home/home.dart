@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-// import 'package:openemr/interface/home/navigationMenu.dart';
+import 'package:openemr/interface/navigation/navigationMenu.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -22,61 +22,18 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [Color(0xFFcb2d3e), Color(0xFFef473a)]),
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Color(0xFFcb2d3e), Color(0xFFef473a)],
+        ),
       ),
       child: Stack(
         children: <Widget>[
-          NavigationMenu(context),
+          NavigationMenu(context: context),
           Dashboard(context),
         ],
       ),
     ));
-  }
-
-  Widget NavigationMenu(context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            InkWell(
-              onTap: () {
-                Navigator.of(context).pushNamed("/patientList");
-              },
-              child: FaIcon(
-                FontAwesomeIcons.plusCircle,
-                color: Colors.white,
-                size: 60.0,
-              ),
-            ),
-            SizedBox(height: 30),
-            FaIcon(
-              FontAwesomeIcons.userAstronaut,
-              color: Colors.white,
-              size: 60.0,
-            ),
-            SizedBox(height: 30),
-            FaIcon(
-              FontAwesomeIcons.comment,
-              color: Colors.white,
-              size: 60.0,
-            ),
-            SizedBox(height: 30),
-            FaIcon(
-              FontAwesomeIcons.qrcode,
-              color: Colors.white,
-              size: 60.0,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget Dashboard(context) {
@@ -107,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         setState(() {
                           isCollapsed = !isCollapsed;
-                          radius = isCollapsed ?  0 :  20;
+                          radius = isCollapsed ? 0 : 20;
                         });
                       }),
                   title: Text("OpenEMR"),
