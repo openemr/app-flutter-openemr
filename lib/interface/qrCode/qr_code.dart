@@ -21,28 +21,28 @@ class _MyAppState extends State<QrCode> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-          appBar: new AppBar(
-            automaticallyImplyLeading: true,
-            title: new Text('QR/Barcode Scanner'),
-          ),
-          body: Builder(
-              builder: (context) => new Center(
-                    child: new Column(
-                      children: <Widget>[
-                        new Container(
-                          child: new MaterialButton(
-                            onPressed: () => scan(context),
-                            child: new Text(
-                              "Scan",
-                            ),
-                            color: Colors.white54,
-                          ),
-                          padding: const EdgeInsets.all(8.0),
+      appBar: new AppBar(
+        automaticallyImplyLeading: true,
+        title: new Text('QR/Barcode Scanner'),
+      ),
+      body: Builder(
+          builder: (context) => new Center(
+                child: new Column(
+                  children: <Widget>[
+                    new Container(
+                      child: new MaterialButton(
+                        onPressed: () => scan(context),
+                        child: new Text(
+                          "Scan",
                         ),
-                        new Text(barcode),
-                      ],
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      padding: const EdgeInsets.all(8.0),
                     ),
-                  )),
+                    new Text(barcode),
+                  ],
+                ),
+              )),
     );
   }
 

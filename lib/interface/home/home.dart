@@ -300,22 +300,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ))),
                                   Card(
-                                      elevation: 5,
+                                  elevation: 5,
+                                  child: InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamed("/heartRate");
+                                      },
                                       child: Padding(
                                         padding: EdgeInsets.all(10.0),
                                         child: Column(
                                           children: <Widget>[
                                             FaIcon(
-                                              FontAwesomeIcons.waze,
-                                              color: Colors.grey,
+                                              FontAwesomeIcons.heartbeat,
+                                              color: Colors.pink,
                                               size: 70.0,
-                                              semanticLabel: 'Coming Soon',
+                                              semanticLabel: 'Heart Rate',
                                             ),
-                                            Text("Coming soon",
+                                            Text("Heart Rate",
                                                 style: TextStyle(fontSize: 16)),
                                           ],
                                         ),
-                                      )),
+                                      ))),
                                   Card(
                                       elevation: 5,
                                       child: Padding(

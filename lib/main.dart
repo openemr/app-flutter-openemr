@@ -94,8 +94,9 @@ class _MyAppState extends State<MyApp> {
       locale: locale,
       title: 'OpenEMR',
       theme: new ThemeData(
-        primarySwatch: Colors.red,
-      ),
+          primarySwatch: Colors.blue,
+          iconTheme:
+              IconThemeData(color: Colors.green, opacity: 1, size: 20.0)),
       routes: routes,
     );
   }
