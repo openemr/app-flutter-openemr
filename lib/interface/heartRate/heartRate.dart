@@ -140,7 +140,10 @@ class HeartRateView extends State<HeartRate> {
     
     print(_bpm);
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: new AppBar(
+        automaticallyImplyLeading: true,
+        title: new Text('Pulse rate'),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[

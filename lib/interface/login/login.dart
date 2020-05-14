@@ -149,17 +149,24 @@ class LoginScreenState extends State<LoginScreen>
       _isLoading ? new CircularProgressIndicator() : loginBtn
     ];
 
-    return new Scaffold(
-      appBar: null,
-      key: scaffoldKey,
-      body: Container(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: loginForm,
-        ),
-      ),
-    );
+    return new GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
+        child: Scaffold(
+          appBar: null,
+          key: scaffoldKey,
+          body: Container(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: loginForm,
+            ),
+          ),
+        ));
   }
 
   @override
