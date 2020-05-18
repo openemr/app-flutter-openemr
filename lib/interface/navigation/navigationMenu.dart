@@ -22,32 +22,15 @@ class NavigationMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             MenuItem(
-              FaIcon(
-                FontAwesomeIcons.plusCircle,
-                color: Colors.white,
-                size: 60.0,
-              ),
+              icon: FontAwesomeIcons.plusCircle,
             ),
             MenuItem(
-              FaIcon(
-                FontAwesomeIcons.userAstronaut,
-                color: Colors.white,
-                size: 60.0,
-              ),
+              icon: FontAwesomeIcons.qrcode,
+              route: "/qrCode",
             ),
             MenuItem(
-              FaIcon(
-                FontAwesomeIcons.comment,
-                color: Colors.white,
-                size: 60.0,
-              ),
-            ),
-            MenuItem(
-              FaIcon(
-                FontAwesomeIcons.qrcode,
-                color: Colors.white,
-                size: 60.0,
-              ),
+              icon: FontAwesomeIcons.signOutAlt,
+              action: "logout",
             ),
           ],
         ),
