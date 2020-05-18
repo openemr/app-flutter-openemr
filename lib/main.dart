@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:openemr/data/database_helper.dart';
+import 'package:openemr/interface/home/home.dart';
+import 'package:openemr/interface/login/login.dart';
+import 'package:openemr/interface/splashScreen.dart';
 import 'package:openemr/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -74,30 +78,44 @@ class _MyAppState extends State<MyApp> {
     this.locale = Locale("en");
   }
 
+  Future<bool> _userLoggedIn() async {
+    var db = new DatabaseHelper();
+    var isLoggedIn = await db.isLoggedIn();
+    return isLoggedIn;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      localizationsDelegates: [
-        MyLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: [
-        Locale("fa"),
-        Locale("en"),
-        Locale("ar"),
-        Locale("fa"),
-        Locale("he"),
-        Locale("ps"),
-        Locale("ur"),
-      ],
-      locale: locale,
-      title: 'OpenEMR',
-      theme: new ThemeData(
-          primarySwatch: Colors.blue,
-          iconTheme:
-              IconThemeData(color: Colors.green, opacity: 1, size: 20.0)),
-      routes: routes,
+        localizationsDelegates: [
+          MyLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        supportedLocales: [
+          Locale("fa"),
+          Locale("en"),
+          Locale("ar"),
+          Locale("fa"),
+          Locale("he"),
+          Locale("ps"),
+          Locale("ur"),
+        ],
+        locale: locale,
+        title: 'OpenEMR',
+        home: FutureBuilder<bool>(
+            future: _userLoggedIn(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+              if (snapshot.hasData) {
+                return snapshot.data ? HomeScreen() : LoginScreen();
+              }
+              return SplashScreen();
+            }),
+        theme: new ThemeData(
+            primarySwatch: Colors.blue,
+            iconTheme:
+                IconThemeData(color: Colors.green, opacity: 1, size: 20.0)),
+        routes: routes,
     );
   }
 }
