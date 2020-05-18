@@ -10,17 +10,35 @@ class HeartRate extends StatefulWidget {
   }
 }
 
-class HeartRateView extends State<HeartRate> {
+class HeartRateView extends State<HeartRate> with SingleTickerProviderStateMixin {
   bool _toggled = false;
   bool _processing = false;
   List<SensorValue> _data = [];
   CameraController _controller;
   double _alpha = 0.3;
+  AnimationController _animationController;
+  double _iconScale = 1;
   int _bpm = 0;
+  int ts = 30;
+  int windowLen = 30 * 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(duration: Duration(milliseconds: 500), vsync: this);
+    _animationController
+      ..addListener(() {
+        setState(() {
+          _iconScale = 1.0 + _animationController.value * 0.4;
+        });
+      });
+  }
 
   _toggle() {
     _initController().then((onValue) {
       Wakelock.enable();
+      _animationController.repeat(reverse: true);
       setState(() {
         _toggled = true;
         _processing = false;
@@ -32,6 +50,8 @@ class HeartRateView extends State<HeartRate> {
   _untoggle() {
     _disposeController();
     Wakelock.disable();
+    _animationController.stop();
+    _animationController.value = 0.0;
     setState(() {
       _toggled = false;
       _processing = false;
@@ -86,8 +106,9 @@ class HeartRateView extends State<HeartRate> {
             _values[i].value > _threshold) {
           if (_previous != 0) {
             _counter++;
-            _bpm +=
-                60000 / (_values[i].time.millisecondsSinceEpoch - _previous);
+            _bpm += 60 *
+                1000 /
+                (_values[i].time.millisecondsSinceEpoch - _previous);
           }
           _previous = _values[i].time.millisecondsSinceEpoch;
         }
@@ -95,10 +116,11 @@ class HeartRateView extends State<HeartRate> {
       if (_counter > 0) {
         _bpm = _bpm / _counter;
         setState(() {
-          _bpm = (1 - _alpha) * _bpm + _alpha * _bpm;
+          this._bpm = ((1 - _alpha) * _bpm + _alpha * _bpm).toInt();
         });
       }
-      await Future.delayed(Duration(milliseconds: (1000 * 50 / 30).round()));
+      await Future.delayed(
+          Duration(milliseconds: (1000 * windowLen / ts).round()));
     }
   }
 
@@ -106,13 +128,13 @@ class HeartRateView extends State<HeartRate> {
     double _avg =
         image.planes.first.bytes.reduce((value, element) => value + element) /
             image.planes.first.bytes.length;
-    if (_data.length >= 50) {
+    if (_data.length >= windowLen) {
       _data.removeAt(0);
     }
     setState(() {
       _data.add(SensorValue(DateTime.now(), _avg));
     });
-    Future.delayed(Duration(milliseconds: 1000 ~/ 30)).then((onValue) {
+    Future.delayed(Duration(milliseconds: 1000 ~/ ts)).then((onValue) {
       setState(() {
         _processing = false;
       });
@@ -132,59 +154,102 @@ class HeartRateView extends State<HeartRate> {
 
   @override
   Widget build(BuildContext context) {
-    if(_data.length > 0){
-      setState(() {
-      _bpm= _data[0].value.toInt();
-    });
-    }
-    
-    print(_bpm);
     return Scaffold(
-      appBar: new AppBar(
-        automaticallyImplyLeading: true,
-        title: new Text('Pulse rate'),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Center(
-                      child: _controller == null
-                          ? Container()
-                          : CameraPreview(_controller),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        (_bpm > 30 && _bpm < 150 ? _bpm.round().toString() : "--"),
-                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(18),
+                          ),
+                          child: Stack(
+                            children: <Widget>[
+                              _controller != null && _toggled
+                                  ? AspectRatio(
+                                      aspectRatio:
+                                          _controller.value.aspectRatio,
+                                      child: CameraPreview(_controller),
+                                    )
+                                  : Container(
+                                      padding: EdgeInsets.all(12),
+                                      alignment: Alignment.center,
+                                      color: Colors.grey,
+                                    ),
+                              Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(4),
+                                child: Text(
+                                  _toggled
+                                      ? "Cover both the camera and the flash with your finger"
+                                      : "Camera feed will display here",
+                                  style: TextStyle(
+                                      backgroundColor: _toggled
+                                          ? Colors.white
+                                          : Colors.transparent),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    Expanded(
+                      flex: 1,
+                      child: Center(
+                          child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "Estimated BPM",
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                          Text(
+                            (_bpm > 30 && _bpm < 150
+                                ? _bpm.round().toString()
+                                : "--"),
+                            style: TextStyle(
+                                fontSize: 32, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )),
+                    ),
+                  ],
+                )),
             Expanded(
+              flex: 1,
               child: Center(
-                child: IconButton(
-                  icon: Icon(_toggled ? Icons.favorite : Icons.favorite_border),
-                  color: Colors.red,
-                  iconSize: 128,
-                  onPressed: () {
-                    if (_toggled) {
-                      _untoggle();
-                    } else {
-                      _toggle();
-                    }
-                  },
+                child: Transform.scale(
+                  scale: _iconScale,
+                  child: IconButton(
+                    icon:
+                        Icon(_toggled ? Icons.favorite : Icons.favorite_border),
+                    color: Colors.red,
+                    iconSize: 128,
+                    onPressed: () {
+                      if (_toggled) {
+                        _untoggle();
+                      } else {
+                        _toggle();
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
             Expanded(
+              flex: 1,
               child: Container(
                 margin: EdgeInsets.all(12),
                 decoration: BoxDecoration(
