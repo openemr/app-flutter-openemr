@@ -194,20 +194,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: <Widget>[
                                     Card(
                                         elevation: 5,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            children: <Widget>[
-                                              FaIcon(
-                                                FontAwesomeIcons.comment,
-                                                color: Colors.pink,
-                                                size: 70.0,
-                                                semanticLabel: 'Chat',
-                                              ),
-                                              Text("Chat",
-                                                  style:
-                                                      TextStyle(fontSize: 16)),
-                                            ],
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.of(context)
+                                                .pushNamed("/chat");
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10.0),
+                                            child: Column(
+                                              children: <Widget>[
+                                                FaIcon(
+                                                  FontAwesomeIcons.comment,
+                                                  color: Colors.pink,
+                                                  size: 70.0,
+                                                  semanticLabel: 'Chat',
+                                                ),
+                                                Text("Chat",
+                                                    style: TextStyle(
+                                                        fontSize: 16)),
+                                              ],
+                                            ),
                                           ),
                                         )),
                                     Card(

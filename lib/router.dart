@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:openemr/interface/chat/chat.dart';
 import 'package:openemr/interface/comingSoon.dart';
 import 'package:openemr/interface/home/home.dart';
 import 'package:openemr/interface/login/login.dart';
@@ -12,5 +13,6 @@ final routes = {
   '/home': (BuildContext context) => new HomeScreen(),
   '/qrCode': (BuildContext context) => new QrCode(),
   '/patientList': (BuildContext context) => new PatientList(),
-  '/heartRate': (BuildContext context) => new HeartRate()
+  '/heartRate': (BuildContext context) => new HeartRate(),
+  '/chat': (BuildContext context) => new Chat()
 };
