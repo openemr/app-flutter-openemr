@@ -23,7 +23,8 @@ class RestDatasource {
   NetworkUtil _netUtil = new NetworkUtil();
   static final LOGIN_URL = "/apis/api/auth";
 
-  Future<User> login(String username, String password, String url) {
+  Future<User> login(
+      String username, String password, String url, bool savePassword) {
     return _netUtil.post(url + LOGIN_URL, body: {
       "grant_type": "password",
       "username": username,
@@ -33,6 +34,7 @@ class RestDatasource {
       if (res == null) throw new Exception("Invalid Login Credentials");
       res['username'] = username;
       res['baseUrl'] = url;
+      res['savePassword'] = savePassword;
       return new User.map(res);
     });
   }

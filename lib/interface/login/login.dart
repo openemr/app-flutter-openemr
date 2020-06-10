@@ -19,7 +19,7 @@ class LoginScreenState extends State<LoginScreen>
     implements LoginScreenContract, AuthStateListener {
   BuildContext _ctx;
 
-  bool _isLoading = false;
+  bool _isLoading = false, _savePassword = false;
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password, _url;
@@ -38,7 +38,7 @@ class LoginScreenState extends State<LoginScreen>
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      _presenter.doLogin(_username, _password, _url);
+      _presenter.doLogin(_username, _password, _url, _savePassword);
     }
   }
 
@@ -54,8 +54,7 @@ class LoginScreenState extends State<LoginScreen>
   }
 
   var _value = "en";
-  static const ar_dropdown = 4 / 1;
-  static const ar_btn = 15 / 2;
+
   DropdownButton _normalDown() => DropdownButton<String>(
         underline: Container(
           height: 2,
@@ -64,20 +63,14 @@ class LoginScreenState extends State<LoginScreen>
         items: [
           DropdownMenuItem(
             value: "en",
-            child: AspectRatio(
-              aspectRatio: ar_dropdown,
-              child: Text(
-                "English",
-              ),
+            child: Text(
+              "English",
             ),
           ),
           DropdownMenuItem(
             value: "ar",
-            child: AspectRatio(
-              aspectRatio: ar_dropdown,
-              child: Text(
-                "Arabic",
-              ),
+            child: Text(
+              "Arabic",
             ),
           ),
         ],
@@ -93,61 +86,59 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     _ctx = context;
-    var loginBtn = AspectRatio(
-      aspectRatio: ar_btn,
-      child: new RaisedButton(
-        onPressed: _submit,
-        child: new Text(MyLocalizations.of(context, 'LOGIN')),
-        color: Theme.of(context).buttonColor,
-      ),
+    var loginBtn = new RaisedButton(
+      onPressed: _submit,
+      child: new Text(MyLocalizations.of(context, 'LOGIN')),
+      color: Theme.of(context).buttonColor,
     );
-    var loginForm = <Widget>[
+
+    var loginForm = Column(children: <Widget>[
       new Image.asset("assets/images/logo.png", fit: BoxFit.cover),
       new Form(
         key: formKey,
         child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new TextFormField(
-                onSaved: (val) => _username = val,
-                decoration: new InputDecoration(
-                  labelText: MyLocalizations.of(context, 'Username'),
-                  border: OutlineInputBorder(),
-                ),
-              ),
+            new TextFormField(
+              onSaved: (val) => _username = val,
+              decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Username')),
             ),
-            new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new TextFormField(
-                onSaved: (val) => _password = val,
-                decoration: new InputDecoration(
-                  labelText: MyLocalizations.of(context, 'Password'),
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-              ),
+            new TextFormField(
+              onSaved: (val) => _password = val,
+              decoration: new InputDecoration(
+                  labelText: MyLocalizations.of(context, 'Password')),
+              obscureText: true,
             ),
-            new Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: new TextFormField(
-                onSaved: (val) => _url = val,
-                decoration: new InputDecoration(
+            new TextFormField(
+              onSaved: (val) => _url = val,
+              decoration: new InputDecoration(
                   labelText: MyLocalizations.of(context, 'URL'),
-                  hintText: "http://example.com",
-                  border: OutlineInputBorder(),
-                ),
-              ),
+                  hintText: "http://example.com"),
             ),
-            _normalDown(),
-            SizedBox(
-              height: 15,
-            )
+            Row(
+              children: <Widget>[
+                SizedBox(
+                  height: 45.0,
+                  width: 24.0,
+                  child: Checkbox(
+                    value: _savePassword,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _savePassword = newValue;
+                      });
+                    },
+                  ),
+                ),
+                Text(" Save Credentials")
+              ],
+            ),
           ],
         ),
       ),
-      _isLoading ? new CircularProgressIndicator() : loginBtn
-    ];
+      _normalDown(),
+      _isLoading ? new CircularProgressIndicator() : loginBtn,
+    ]);
 
     return new GestureDetector(
         onTap: () {
@@ -157,16 +148,17 @@ class LoginScreenState extends State<LoginScreen>
           }
         },
         child: Scaffold(
-          appBar: null,
-          key: scaffoldKey,
-          body: Container(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: loginForm,
-            ),
-          ),
-        ));
+            appBar: null,
+            key: scaffoldKey,
+            body: Center(
+              child: Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: SingleChildScrollView(child: loginForm),
+                decoration: new BoxDecoration(
+                    color: Colors.teal.shade200.withOpacity(0.5)),
+              ),
+            )));
   }
 
   @override
