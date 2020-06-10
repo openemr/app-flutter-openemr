@@ -29,11 +29,12 @@ class DatabaseHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT, baseUrl TEXT, savePassword BOOLEAN)");
+        "CREATE TABLE User(id INTEGER PRIMARY KEY, username TEXT, tokenType TEXT, accessToken TEXT, userId TEXT, baseUrl TEXT, savePassword BOOLEAN, password TEXT)");
     print("Created tables");
   }
 
   Future<int> saveUser(User user) async {
+    await deleteUsers();
     var dbClient = await db;
     int res = await dbClient.insert("User", user.toMap());
     return res;
@@ -45,10 +46,34 @@ class DatabaseHelper {
     return res;
   }
 
+  Future<int> logoutUser() async {
+    var dbClient = await db;
+    var res = await dbClient.query("User");
+    if (res[0]["savePassword"] == 1) {
+      int res = await dbClient.update("User", {'accessToken': ""});
+      return res;
+    } else {
+      int res = await dbClient.delete("User");
+      return res;
+    }
+  }
+
   Future<bool> isLoggedIn() async {
     var dbClient = await db;
     var res = await dbClient.query("User");
-    return res.isNotEmpty && res[0]["accessToken"] != null ;
+    return res.isNotEmpty &&
+        res[0]["accessToken"] != null &&
+        res[0]["accessToken"] != "";
+  }
+
+  Future<Map<String, dynamic>> getUser() async {
+    var dbClient = await db;
+    var res = await dbClient.query("User");
+    if (res.isNotEmpty) {
+      return res[0];
+    } else {
+      return {};
+    }
   }
 
   Future<String> getBaseUrl() async {

@@ -17,7 +17,7 @@ class MenuItem extends StatelessWidget {
 
   handleLogout(context) async {
     var db = new DatabaseHelper();
-    await db.deleteUsers();
+    await db.logoutUser();
     Navigator.of(context).pushNamedAndRemoveUntil(
       "/login",
       (Route<dynamic> route) => false,

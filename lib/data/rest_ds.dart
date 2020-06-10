@@ -35,6 +35,7 @@ class RestDatasource {
       res['username'] = username;
       res['baseUrl'] = url;
       res['savePassword'] = savePassword;
+      res['password'] = password;
       return new User.map(res);
     });
   }
