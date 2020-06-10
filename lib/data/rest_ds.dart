@@ -47,7 +47,7 @@ class RestDatasource {
         .then((dynamic res) {
       if (res == null) throw new Exception("Error fetching data");
       var patientList = new List<Patient>();
-      res.forEach((patient) => {patientList.add(Patient.map(patient))});
+      res["data"].forEach((patient) => {patientList.add(Patient.map(patient))});
       return patientList;
     });
   }
