@@ -69,6 +69,11 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/loading.gif
+    - assets/images/span_book.jpg
+    - assets/images/test_barcode.jpg
+    - assets/images/test_contact_barcode.jpg
+    - assets/images/test_face.jpg
+    - assets/images/test_text.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
