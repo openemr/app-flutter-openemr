@@ -3,6 +3,9 @@ import 'package:openemr/interface/chat/chat.dart';
 import 'package:openemr/interface/comingSoon.dart';
 import 'package:openemr/interface/home/home.dart';
 import 'package:openemr/interface/login/login.dart';
+import 'package:openemr/interface/ml_vision/camera_preview_scanner.dart';
+import 'package:openemr/interface/ml_vision/material_barcode_scanner.dart';
+import 'package:openemr/interface/ml_vision/picture_scanner.dart';
 import 'package:openemr/interface/qrCode/qr_code.dart';
 import 'package:openemr/interface/patientList/patientList.dart';
 import 'package:openemr/interface/heartRate/heartRate.dart';
@@ -14,5 +17,9 @@ final routes = {
   '/qrCode': (BuildContext context) => new QrCode(),
   '/patientList': (BuildContext context) => new PatientList(),
   '/heartRate': (BuildContext context) => new HeartRate(),
-  '/chat': (BuildContext context) => new Chat()
+  '/chat': (BuildContext context) => new Chat(),
+  '/PictureScanner': (BuildContext context) => PictureScanner(),
+  '/CameraPreviewScanner': (BuildContext context) => CameraPreviewScanner(),
+  '/MaterialBarcodeScanner': (BuildContext context) =>
+      const MaterialBarcodeScanner(),
 };
