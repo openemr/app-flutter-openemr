@@ -341,22 +341,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ))),
                                     Card(
                                         elevation: 5,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(10.0),
-                                          child: Column(
-                                            children: <Widget>[
-                                              FaIcon(
-                                                FontAwesomeIcons.waze,
-                                                color: Colors.grey,
-                                                size: 70.0,
-                                                semanticLabel: 'Coming Soon',
+                                        child: InkWell(
+                                            onTap: () {
+                                              Navigator.of(context)
+                                                  .pushNamed("/mlKit");
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.all(10.0),
+                                              child: Column(
+                                                children: <Widget>[
+                                                  FaIcon(
+                                                    FontAwesomeIcons.kickstarter,
+                                                    color: Colors.pink,
+                                                    size: 70.0,
+                                                    semanticLabel: 'ML Kit',
+                                                  ),
+                                                  Text("ML Kit",
+                                                      style: TextStyle(
+                                                          fontSize: 16)),
+                                                ],
                                               ),
-                                              Text("Coming soon",
-                                                  style:
-                                                      TextStyle(fontSize: 16)),
-                                            ],
-                                          ),
-                                        )),
+                                            ))),
                                     Card(
                                         elevation: 5,
                                         child: Padding(
