@@ -6,9 +6,6 @@ import 'package:openemr/interface/login/login.dart';
 import 'package:openemr/interface/splashScreen.dart';
 import 'package:openemr/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter/foundation.dart'
-    show debugDefaultTargetPlatformOverride;
-import 'package:flutter_webrtc/webrtc.dart';
 
 class MyLocalizations {
   MyLocalizations(this.locale);
@@ -53,8 +50,6 @@ class MyLocalizationsDelegate extends LocalizationsDelegate<MyLocalizations> {
 }
 
 void main() {
-  if (WebRTC.platformIsDesktop)
-    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
   runApp(new MyApp());
 }
 
@@ -114,7 +109,7 @@ class _MyAppState extends State<MyApp> {
           future: _userLoggedIn(),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.hasData) {
-              return snapshot.data ? HomeScreen() : HomeScreen();
+              return snapshot.data ? HomeScreen() : LoginScreen();
             }
             return SplashScreen();
           }),
