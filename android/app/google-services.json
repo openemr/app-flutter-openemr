@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "915854431178",
+    "firebase_url": "https://openemr-9af8e.firebaseio.com",
+    "project_id": "openemr-9af8e",
+    "storage_bucket": "openemr-9af8e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915854431178:android:4523fc73f96cce7d72b533",
+        "android_client_info": {
+          "package_name": "com.example.openemr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915854431178-2h6efuphoh52pi5tni39du1lhri70h1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoA4nGGl8pfvHBEOetfFXYo2y1CnhcBes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915854431178-2h6efuphoh52pi5tni39du1lhri70h1o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
