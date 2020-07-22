@@ -10,6 +10,8 @@ import 'package:openemr/interface/ml_vision/picture_scanner.dart';
 import 'package:openemr/interface/qrCode/qr_code.dart';
 import 'package:openemr/interface/patientList/patientList.dart';
 import 'package:openemr/interface/heartRate/heartRate.dart';
+import 'package:openemr/interface/webrtc-prod/p2pcall.dart';
+import 'package:openemr/interface/webrtc/webrtc.dart';
 
 final routes = {
   '/login': (BuildContext context) => new LoginScreen(),
@@ -21,6 +23,8 @@ final routes = {
   '/chat': (BuildContext context) => new Chat(),
   '/mlKit': (BuildContext context) => new MlVision(),
   '/PictureScanner': (BuildContext context) => PictureScanner(),
+  '/webRTC': (BuildContext context) => WebRTC(),
+  '/RTCP2P': (BuildContext context) => P2PCall(),
   '/CameraPreviewScanner': (BuildContext context) => CameraPreviewScanner(),
   '/MaterialBarcodeScanner': (BuildContext context) =>
       const MaterialBarcodeScanner(),

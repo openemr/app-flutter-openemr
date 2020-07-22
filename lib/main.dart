@@ -6,6 +6,9 @@ import 'package:openemr/interface/login/login.dart';
 import 'package:openemr/interface/splashScreen.dart';
 import 'package:openemr/router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
+import 'package:flutter_webrtc/webrtc.dart';
 
 class MyLocalizations {
   MyLocalizations(this.locale);
@@ -49,7 +52,11 @@ class MyLocalizationsDelegate extends LocalizationsDelegate<MyLocalizations> {
   bool shouldReload(MyLocalizationsDelegate old) => false;
 }
 
-void main() => runApp(new MyApp());
+void main() {
+  if (WebRTC.platformIsDesktop)
+    debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+  runApp(new MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -87,35 +94,35 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-        localizationsDelegates: [
-          MyLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
-        ],
-        supportedLocales: [
-          Locale("fa"),
-          Locale("en"),
-          Locale("ar"),
-          Locale("fa"),
-          Locale("he"),
-          Locale("ps"),
-          Locale("ur"),
-        ],
-        locale: locale,
-        title: 'OpenEMR',
-        home: FutureBuilder<bool>(
-            future: _userLoggedIn(),
-            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-              if (snapshot.hasData) {
-                return snapshot.data ? HomeScreen() : LoginScreen();
-              }
-              return SplashScreen();
-            }),
-        theme: new ThemeData(
-            primarySwatch: Colors.blue,
-            iconTheme:
-                IconThemeData(color: Colors.green, opacity: 1, size: 20.0)),
-        routes: routes,
+      localizationsDelegates: [
+        MyLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        Locale("fa"),
+        Locale("en"),
+        Locale("ar"),
+        Locale("fa"),
+        Locale("he"),
+        Locale("ps"),
+        Locale("ur"),
+      ],
+      locale: locale,
+      title: 'OpenEMR',
+      home: FutureBuilder<bool>(
+          future: _userLoggedIn(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data ? HomeScreen() : HomeScreen();
+            }
+            return SplashScreen();
+          }),
+      theme: new ThemeData(
+          primarySwatch: Colors.blue,
+          iconTheme:
+              IconThemeData(color: Colors.green, opacity: 1, size: 20.0)),
+      routes: routes,
     );
   }
 }
