@@ -38,7 +38,7 @@ class LoginScreenState extends State<LoginScreen>
     if (form.validate()) {
       setState(() => _isLoading = true);
       form.save();
-      _presenter.doLogin(_username, _password, _url, _savePassword);
+      _presenter.doLogin(_username.trim(), _password.trim(), _url, _savePassword);
     }
   }
 
