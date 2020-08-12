@@ -19,6 +19,18 @@ class User {
     this._password = obj["password"];
   }
 
+  set username(String username) {
+    this._username = username;
+  }
+
+  set password(String password) {
+    this._password = password;
+  }
+
+  set url(String url) {
+    this._base_url = url;
+  }
+
   String get username => _username;
   String get tokenType => _token_type;
   String get accessToken => _access_token;
