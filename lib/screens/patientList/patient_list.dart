@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:openemr/models/patient.dart';
+import 'package:openemr/utils/rest_ds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PatientListPage extends StatefulWidget {
   @override
@@ -8,23 +11,29 @@ class PatientListPage extends StatefulWidget {
 }
 
 class _PatientListPageState extends State<PatientListPage> {
-
-    @override
+  @override
   void initState() {
+    fetchList();
     super.initState();
   }
 
-  List list = [
-    'Patient 1',
-    'Patient 2',
-    'Patient 3',
-    'Patient 1',
-    'Patient 2',
-    'Patient 3',
-    'Patient 1',
-    'Patient 2',
-    'Patient 3',
-  ];
+  fetchList() async {
+    RestDatasource api = new RestDatasource();
+    final prefs = await SharedPreferences.getInstance();
+    api
+        .getPatientList(prefs.getString('baseUrl'), prefs.getString('token'))
+        .then((List<Patient> list) {
+      setState(() {
+        patientList = list;
+        historyPatient = prefs.getStringList("historyPatient") == null
+            ? []
+            : prefs.getStringList("historyPatient");
+      });
+    }).catchError((Object error) => print(error.toString()));
+  }
+
+  List patientList = [];
+  List<String> historyPatient = ["1"];
   bool fav = false;
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -50,10 +59,10 @@ class _PatientListPageState extends State<PatientListPage> {
           physics: const ScrollPhysics(),
           children: <Widget>[
             GFSearchBar(
-                searchList: list,
+                searchList: patientList,
                 searchQueryBuilder: (query, list) => list
                     .where((item) =>
-                        item.toLowerCase().contains(query.toLowerCase()))
+                        item.fname.toLowerCase().contains(query.toLowerCase()))
                     .toList(),
                 overlaySearchListItemBuilder: (item) => Container(
                       padding: const EdgeInsets.all(8),
@@ -61,16 +70,18 @@ class _PatientListPageState extends State<PatientListPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            item,
+                            item.fname,
                             style: const TextStyle(fontSize: 18),
                           )
                         ],
                       ),
                     ),
-                onItemSelected: (item) {
-                  setState(() {
-                    print('$item');
-                  });
+                onItemSelected: (item) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  historyPatient.remove(item.pid.toString());
+                  historyPatient.insert(0,item.pid.toString());
+                  prefs.setStringList("historyPatient", historyPatient);
+                  print(prefs.getStringList("historyPatient"));
                 }),
             const Padding(
               padding: EdgeInsets.only(left: 15, top: 30, bottom: 10),

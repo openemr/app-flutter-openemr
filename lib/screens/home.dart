@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:openemr/models/user.dart';
 import 'package:openemr/screens/codescanner/codescanner.dart';
 import 'package:openemr/screens/medicine/medicine_recognition.dart';
 import 'package:openemr/screens/patientList/patient_list.dart';
 import 'package:openemr/screens/ppg/heartRate.dart';
 import 'package:openemr/screens/telehealth/chat.dart';
 import 'package:openemr/screens/telehealth/telehealth.dart';
+import 'package:openemr/utils/rest_ds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/drawer/drawer.dart';
 import '../screens/shimmer/shimmer.dart';
-import '../screens/login.dart';
+import 'login/login.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,16 +21,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List gfComponents = [
-    {
-      'icon': CupertinoIcons.heart_solid,
-      'title': 'PPG',
-      'route': PPG()
-    },
-    {
-      'icon': Icons.video_call,
-      'title': 'Telehealth',
-      'route': Telehealth()
-    },
+    {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
+    {'icon': Icons.video_call, 'title': 'Telehealth', 'route': Telehealth()},
     {
       'icon': const IconData(
         0xe901,
@@ -49,11 +43,7 @@ class _HomePageState extends State<HomePage> {
       'title': 'Medicine',
       'route': MedicineRecognitionPage()
     },
-    {
-      'icon': Icons.scanner,
-      'title': 'Code scanner',
-      'route': CodeScanner()
-    },
+    {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},
   ];
 
   @override
@@ -102,18 +92,22 @@ class _HomePageState extends State<HomePage> {
         onTap: () async {
           if (auth == true) {
             final prefs = await SharedPreferences.getInstance();
-            var username = prefs.getString('usernam');
-            if (username == null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => failRoute),
-              );
-            } else {
+            var username = prefs.getString('username');
+            var password = prefs.getString('password');
+            var url = prefs.getString('baseUrl');
+            RestDatasource api = new RestDatasource();
+            api.login(username, password, url).then((User user) {
+              prefs.setString('token', user.tokenType + " " + user.accessToken);
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (BuildContext context) => route),
               );
-            }
+            }).catchError((Object error) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => failRoute),
+              );
+            });
           } else {
             Navigator.push(
               context,
