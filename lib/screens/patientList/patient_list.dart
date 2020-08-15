@@ -20,21 +20,38 @@ class _PatientListPageState extends State<PatientListPage> {
   fetchList() async {
     RestDatasource api = new RestDatasource();
     final prefs = await SharedPreferences.getInstance();
+    historyPatientId = prefs.getStringList("historyPatient") == null
+        ? []
+        : prefs.getStringList("historyPatient");
+    starredPatientId = prefs.getStringList("starredPatient") == null
+        ? []
+        : prefs.getStringList("starredPatient");
     api
         .getPatientList(prefs.getString('baseUrl'), prefs.getString('token'))
         .then((List<Patient> list) {
+      list.forEach((element) {
+        if (historyPatientId.indexOf(element.pid) != -1) {
+          historyPatientList.add(element);
+        }
+        if (starredPatientId.indexOf(element.pid) != -1) {
+          starredPatientList.add(element);
+        }
+      });
       setState(() {
+        starredPatientList = starredPatientList;
+        historyPatientList = historyPatientList;
         patientList = list;
-        historyPatient = prefs.getStringList("historyPatient") == null
-            ? []
-            : prefs.getStringList("historyPatient");
       });
     }).catchError((Object error) => print(error.toString()));
   }
 
+  List<String> historyPatientId = [];
+  List<String> starredPatientId = [];
+
   List patientList = [];
-  List<String> historyPatient = ["1"];
-  bool fav = false;
+  List historyPatientList = [];
+  List starredPatientList = [];
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: GFAppBar(
@@ -77,11 +94,20 @@ class _PatientListPageState extends State<PatientListPage> {
                       ),
                     ),
                 onItemSelected: (item) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  historyPatient.remove(item.pid.toString());
-                  historyPatient.insert(0,item.pid.toString());
-                  prefs.setStringList("historyPatient", historyPatient);
-                  print(prefs.getStringList("historyPatient"));
+                  if (item != null) {
+                    final prefs = await SharedPreferences.getInstance();
+                    historyPatientId.remove(item.pid.toString());
+                    historyPatientId.insert(0, item.pid.toString());
+                    historyPatientList.remove(item);
+                    historyPatientList.insert(0, item);
+                    prefs.setStringList("historyPatient", historyPatientId);
+                    if (historyPatientList.length > 10) {
+                      historyPatientList.removeLast();
+                    }
+                  }
+                  this.setState(() {
+                    historyPatientList = historyPatientList;
+                  });
                 }),
             const Padding(
               padding: EdgeInsets.only(left: 15, top: 30, bottom: 10),
@@ -92,6 +118,34 @@ class _PatientListPageState extends State<PatientListPage> {
                 dividerColor: Color(0xFF19CA4B),
               ),
             ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              itemCount: starredPatientList.length,
+              itemBuilder: (item, i) {
+                Patient p = starredPatientList[i];
+                return GFListTile(
+                  titleText: p.fname + " " + p.lname,
+                  subtitleText: p.sex,
+                  icon: GFIconButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      starredPatientId.remove(p.pid.toString());
+                      starredPatientList.remove(p);
+                      prefs.setStringList("starredPatient", starredPatientId);
+                      this.setState(() {
+                        starredPatientList = starredPatientList;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.star,
+                      color: GFColors.DANGER,
+                    ),
+                    type: GFButtonType.transparent,
+                  ),
+                );
+              },
+            ),
             const Padding(
               padding: EdgeInsets.only(left: 15, top: 30, bottom: 10),
               child: GFTypography(
@@ -100,6 +154,34 @@ class _PatientListPageState extends State<PatientListPage> {
                 dividerWidth: 25,
                 dividerColor: Color(0xFF19CA4B),
               ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: ClampingScrollPhysics(),
+              itemCount: historyPatientList.length,
+              itemBuilder: (item, i) {
+                Patient p = historyPatientList[i];
+                return GFListTile(
+                  titleText: p.fname + " " + p.lname,
+                  subtitleText: p.sex,
+                  icon: GFIconButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      starredPatientId.insert(0, p.pid.toString());
+                      starredPatientList.insert(0, p);
+                      prefs.setStringList("starredPatient", starredPatientId);
+                      this.setState(() {
+                        starredPatientList = starredPatientList;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.star_border,
+                      color: GFColors.DANGER,
+                    ),
+                    type: GFButtonType.transparent,
+                  ),
+                );
+              },
             ),
           ],
         ),
