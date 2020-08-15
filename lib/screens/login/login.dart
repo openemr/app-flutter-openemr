@@ -37,58 +37,85 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: GFColors.LIGHT,
           body: Padding(
             padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
-            child: Form(
-              key: formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset(
-                    'lib/assets/images/gflogo.png',
-                    width: width * 0.25,
+            child: Center(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height: 25,
+                      ),
+                      Image.asset(
+                        'lib/assets/images/gflogo.png',
+                        width: width * 0.25,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter username';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => _username = val,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Username'),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter password';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => _password = val,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Password'),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter url';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => _url = val,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'URL',
+                              hintText: "http://example.com"),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      GFButton(
+                        onPressed: () => submit(context),
+                        text: 'login',
+                        color: GFColors.DARK,
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    child: TextFormField(
-                      onSaved: (val) => _username = val,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(), labelText: 'Username'),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    child: TextFormField(
-                      onSaved: (val) => _password = val,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(), labelText: 'Password'),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    child: TextFormField(
-                      onSaved: (val) => _url = val,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'URL',
-                          hintText: "http://example.com"),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  GFButton(
-                    onPressed: () => submit(context),
-                    text: 'login',
-                    color: GFColors.DARK,
-                  ),
-                ],
+                ),
               ),
             ),
           )),

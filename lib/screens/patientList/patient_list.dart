@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:openemr/models/patient.dart';
+import 'package:openemr/screens/addpatient/add_patient.dart';
 import 'package:openemr/utils/rest_ds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +19,13 @@ class _PatientListPageState extends State<PatientListPage> {
   }
 
   fetchList() async {
+    historyPatientId = [];
+    starredPatientId = [];
+
+    patientList = [];
+    historyPatientList = [];
+    starredPatientList = [];
+
     RestDatasource api = new RestDatasource();
     final prefs = await SharedPreferences.getInstance();
     historyPatientId = prefs.getStringList("historyPatient") == null
@@ -71,6 +79,26 @@ class _PatientListPageState extends State<PatientListPage> {
             style: TextStyle(fontSize: 17),
           ),
           centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              tooltip: "Refresh",
+              color: GFColors.SUCCESS,
+              onPressed: fetchList,
+            ),
+            IconButton(
+              icon: Icon(Icons.add),
+              tooltip: "Add Patient",
+              color: GFColors.SUCCESS,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => AddPatientScreen()),
+                );
+              },
+            )
+          ],
         ),
         body: ListView(
           physics: const ScrollPhysics(),
@@ -162,7 +190,9 @@ class _PatientListPageState extends State<PatientListPage> {
               itemBuilder: (item, i) {
                 Patient p = historyPatientList[i];
                 return GFListTile(
-                  titleText: p.fname + " " + p.lname,
+                  titleText: (p.fname != null ? p.fname + " " : "") +
+                      (p.mname != null ? p.mname + " " : "") +
+                      (p.lname != null ? p.lname + " " : ""),
                   subtitleText: p.sex,
                   icon: GFIconButton(
                     onPressed: () async {

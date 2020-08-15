@@ -25,7 +25,6 @@ class RestDatasource {
   }
 
   Future<List<Patient>> getPatientList(baseUrl, token) {
-    print(baseUrl);
     Map<String, String> headers = {"Authorization": token};
     return _netUtil
         .get(baseUrl + patientendpoint, headers: headers)
@@ -34,6 +33,29 @@ class RestDatasource {
       var patientList = new List<Patient>();
       res.forEach((patient) => {patientList.add(Patient.map(patient))});
       return patientList;
+    });
+  }
+
+  Future<dynamic> addPatient(
+      baseUrl, token, title, fname, mname, lname, dob, sex) {
+    Map<String, String> headers = {"Authorization": token};
+    return _netUtil.post(baseUrl + addpatientendpoint, headers: headers, body: {
+      "title": title,
+      "fname": fname,
+      "mname": mname,
+      "lname": lname,
+      "dob": dob,
+      "sex": sex,
+      "street": "",
+      "postal_code": "",
+      "city": "",
+      "state": "",
+      "country_code": "",
+      "phone_contact": "",
+      "race": "",
+      "ethnicity": ""
+    }).then((dynamic res) {
+      return res;
     });
   }
 }

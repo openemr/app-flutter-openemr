@@ -32,7 +32,8 @@ class NetworkUtil {
       return Future.error("Invalid API URL");
     }
     return http
-        .post(url, body: body, headers: headers, encoding: encoding)
+        .post(url,
+            body: json.encode(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
@@ -42,7 +43,6 @@ class NetworkUtil {
         throw new Exception(
             statusCode.toString() + "Error while fetching data");
       }
-
       return _decoder.convert(res);
     });
   }
