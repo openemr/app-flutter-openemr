@@ -24,6 +24,9 @@ dependencies:
       ref: flash_light
   barcode_scan: ^3.0.1
   shared_preferences: ^0.5.8
+  firebase_storage: ^3.1.6
+  cloud_firestore: ^0.13.7
+  firebase_auth: ^0.16.1
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +64,7 @@ flutter:
     - lib/assets/images/avatar10.png
     - lib/assets/images/avatar11.png
     - lib/assets/images/avatar12.png
+    - lib/assets/images/firebase.png
     - lib/assets/gif/success1.gif
     - lib/assets/icons/gflogo.png
     - lib/assets/images/logo.png

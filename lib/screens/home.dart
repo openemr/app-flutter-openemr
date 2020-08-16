@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:openemr/models/user.dart';
 import 'package:openemr/screens/codescanner/codescanner.dart';
+import 'package:openemr/screens/login/login2.dart';
 import 'package:openemr/screens/medicine/medicine_recognition.dart';
 import 'package:openemr/screens/patientList/patient_list.dart';
 import 'package:openemr/screens/ppg/heartRate.dart';
@@ -13,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/drawer/drawer.dart';
 // import '../screens/shimmer/shimmer.dart';
 import 'login/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,9 +22,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final firebaseFlag = false;
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
-    {'icon': Icons.video_call, 'title': 'Telehealth', 'route': Telehealth()},
+    {
+      'icon': Icons.video_call,
+      'title': 'Telehealth',
+      'authentication': "firebase",
+      'failRoute': LoginFirebaseScreen(),
+      'route': Telehealth()
+    },
     {
       'icon': const IconData(
         0xe901,
@@ -35,7 +46,7 @@ class _HomePageState extends State<HomePage> {
       'icon': Icons.people,
       'title': 'Patient List',
       'route': PatientListPage(),
-      'authentication': true,
+      'authentication': "webapp",
       'failRoute': LoginScreen()
     },
     {
@@ -46,8 +57,14 @@ class _HomePageState extends State<HomePage> {
     {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},
   ];
 
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
+        key: scaffoldKey,
         drawer: DrawerPage(),
         appBar: AppBar(
           backgroundColor: GFColors.DARK,
@@ -86,11 +103,11 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  Widget buildSquareTile(String title, IconData icon, Widget route, bool auth,
+  Widget buildSquareTile(String title, IconData icon, Widget route, String auth,
           Widget failRoute) =>
       InkWell(
         onTap: () async {
-          if (auth == true) {
+          if (auth == "webapp") {
             final prefs = await SharedPreferences.getInstance();
             var username = prefs.getString('username');
             var password = prefs.getString('password');
@@ -108,6 +125,24 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (BuildContext context) => failRoute),
               );
             });
+          } else if (auth == "firebase") {
+            if (firebaseFlag) {
+              var user = await _auth.currentUser();
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => route),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => failRoute),
+                );
+              }
+            } else {
+              _showSnackBar("Check readme to enable firebase");
+            }
           } else {
             Navigator.push(
               context,
