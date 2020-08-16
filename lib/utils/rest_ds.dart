@@ -1,0 +1,61 @@
+import 'dart:async';
+
+import 'package:openemr/models/patient.dart';
+import 'package:openemr/utils/network.dart';
+import 'package:openemr/models/user.dart';
+import 'package:openemr/const/strings.dart';
+
+class RestDatasource {
+  NetworkUtil _netUtil = new NetworkUtil();
+
+  Future<User> login(String username, String password, String url) {
+    url = url == null ? "" : url;
+    return _netUtil.post(url + loginendpoint, body: {
+      "grant_type": "password",
+      "username": username,
+      "password": password,
+      "scope": "default"
+    }).then((dynamic res) {
+      if (res == null) throw new Exception("Invalid Login Credentials");
+      res['username'] = username;
+      res['baseUrl'] = url;
+      res['password'] = password;
+      return new User.map(res);
+    });
+  }
+
+  Future<List<Patient>> getPatientList(baseUrl, token) {
+    Map<String, String> headers = {"Authorization": token};
+    return _netUtil
+        .get(baseUrl + patientendpoint, headers: headers)
+        .then((dynamic res) {
+      if (res == null) throw new Exception("Error fetching data");
+      var patientList = new List<Patient>();
+      res.forEach((patient) => {patientList.add(Patient.map(patient))});
+      return patientList;
+    });
+  }
+
+  Future<dynamic> addPatient(
+      baseUrl, token, title, fname, mname, lname, dob, sex) {
+    Map<String, String> headers = {"Authorization": token};
+    return _netUtil.post(baseUrl + addpatientendpoint, headers: headers, body: {
+      "title": title,
+      "fname": fname,
+      "mname": mname,
+      "lname": lname,
+      "dob": dob,
+      "sex": sex,
+      "street": "",
+      "postal_code": "",
+      "city": "",
+      "state": "",
+      "country_code": "",
+      "phone_contact": "",
+      "race": "",
+      "ethnicity": ""
+    }).then((dynamic res) {
+      return res;
+    });
+  }
+}

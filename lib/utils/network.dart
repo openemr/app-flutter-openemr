@@ -32,18 +32,17 @@ class NetworkUtil {
       return Future.error("Invalid API URL");
     }
     return http
-        .post(url, body: body, headers: headers, encoding: encoding)
+        .post(url,
+            body: json.encode(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
       final String res = response.body;
       final int statusCode = response.statusCode;
-
       if (statusCode == 401) {
         throw new Exception(statusCode.toString() + "Invalid Credentials");
       } else if (statusCode < 200 || statusCode > 400 || json == null) {
         throw new Exception(
             statusCode.toString() + "Error while fetching data");
       }
-
       return _decoder.convert(res);
     });
   }

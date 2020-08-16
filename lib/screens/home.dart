@@ -1,0 +1,172 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:getwidget/getwidget.dart';
+import 'package:openemr/models/user.dart';
+import 'package:openemr/screens/codescanner/codescanner.dart';
+import 'package:openemr/screens/login/login2.dart';
+import 'package:openemr/screens/medicine/medicine_recognition.dart';
+import 'package:openemr/screens/patientList/patient_list.dart';
+import 'package:openemr/screens/ppg/heartRate.dart';
+import 'package:openemr/screens/telehealth/telehealth.dart';
+import 'package:openemr/utils/rest_ds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../screens/drawer/drawer.dart';
+// import '../screens/shimmer/shimmer.dart';
+import 'login/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final firebaseFlag = false;
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
+  List gfComponents = [
+    {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
+    {
+      'icon': Icons.video_call,
+      'title': 'Telehealth',
+      'authentication': "firebase",
+      'failRoute': LoginFirebaseScreen(),
+      'route': Telehealth()
+    },
+    {
+      'icon': Icons.people,
+      'title': 'Patient List',
+      'route': PatientListPage(),
+      'authentication': "webapp",
+      'failRoute': LoginScreen()
+    },
+    {
+      'icon': Icons.info,
+      'title': 'Medicine',
+      'route': MedicineRecognitionPage()
+    },
+    {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},
+  ];
+
+  void _showSnackBar(String text) {
+    scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        key: scaffoldKey,
+        drawer: DrawerPage(),
+        appBar: AppBar(
+          backgroundColor: GFColors.DARK,
+          title: Image.asset(
+            'lib/assets/icons/gflogo.png',
+            width: 150,
+          ),
+          centerTitle: true,
+        ),
+        body: ListView(
+          physics: const ScrollPhysics(),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.only(
+                  left: 15, bottom: 20, top: 20, right: 15),
+              child: GridView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  physics: const ScrollPhysics(),
+                  itemCount: gfComponents.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20),
+                  itemBuilder: (BuildContext context, int index) =>
+                      buildSquareTile(
+                          gfComponents[index]['title'],
+                          gfComponents[index]['icon'],
+                          gfComponents[index]['route'],
+                          gfComponents[index]['authentication'],
+                          gfComponents[index]['failRoute'])),
+            ),
+          ],
+        ),
+      );
+
+  Widget buildSquareTile(String title, IconData icon, Widget route, String auth,
+          Widget failRoute) =>
+      InkWell(
+        onTap: () async {
+          if (auth == "webapp") {
+            final prefs = await SharedPreferences.getInstance();
+            var username = prefs.getString('username');
+            var password = prefs.getString('password');
+            var url = prefs.getString('baseUrl');
+            RestDatasource api = new RestDatasource();
+            api.login(username, password, url).then((User user) {
+              prefs.setString('token', user.tokenType + " " + user.accessToken);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => route),
+              );
+            }).catchError((Object error) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => failRoute),
+              );
+            });
+          } else if (auth == "firebase") {
+            if (firebaseFlag) {
+              var user = await _auth.currentUser();
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (BuildContext context) => route),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => failRoute),
+                );
+              }
+            } else {
+              _showSnackBar("Check readme to enable firebase");
+            }
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (BuildContext context) => route),
+            );
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF333333),
+            borderRadius: const BorderRadius.all(Radius.circular(7)),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.61),
+                  blurRadius: 6,
+                  spreadRadius: 0),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Icon(
+                icon,
+                color: GFColors.SUCCESS,
+                size: 30,
+              ),
+//            Icon((icon),),
+              Text(
+                title,
+                style: const TextStyle(color: GFColors.WHITE, fontSize: 20),
+              )
+            ],
+          ),
+        ),
+      );
+}
