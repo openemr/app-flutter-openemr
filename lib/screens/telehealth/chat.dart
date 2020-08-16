@@ -1,31 +1,43 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
+// import 'dart:collection';
+// import 'dart:io';
+// import 'dart:math';
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:getwidget/getwidget.dart';
 
-class Chat extends StatefulWidget {
+class ChatScreen extends StatefulWidget {
+  final String messagesId;
+  final String chatDocumentId;
+  final String heading;
+  final String userId;
+  final String userName;
+
+
+  ChatScreen(
+      {Key key,
+      @required this.messagesId,
+      @required this.heading,
+      @required this.userId,
+      @required this.userName,
+      @required this.chatDocumentId})
+      : super(key: key);
+
   @override
-  _ChatState createState() => _ChatState();
+  _ChatScreenState createState() => _ChatScreenState();
 }
 
-class _ChatState extends State<Chat> {
+class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
-
-  final ChatUser user = ChatUser(
-    name: "Fayeed",
-    firstName: "Fayeed",
-    lastName: "Pawaskar",
-    uid: Random().nextInt(100).toString(),
-    avatar: "https://picsum.photos/200",
-  );
+  final Firestore _store = Firestore.instance;
+  ChatUser chatUser;
 
   List<ChatMessage> messages = List<ChatMessage>();
   var m = List<ChatMessage>();
@@ -34,6 +46,13 @@ class _ChatState extends State<Chat> {
 
   @override
   void initState() {
+    chatUser = ChatUser(
+      name: widget.userName,
+      uid: widget.userId,
+    );
+    this.setState(() {
+      chatUser = chatUser;
+    });
     super.initState();
   }
 
@@ -57,17 +76,16 @@ class _ChatState extends State<Chat> {
   }
 
   void onSend(ChatMessage message) async {
-    // print(message.toJson());
-    // var documentReference = Firestore.instance
-    //     .collection('messages')
-    //     .document(DateTime.now().millisecondsSinceEpoch.toString());
-
-    // await Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(
-    //     documentReference,
-    //     message.toJson(),
-    //   );
-    // });
+    print(message.toJson());
+    await _store.collection('messages').document(widget.messagesId).updateData({
+      "messages": FieldValue.arrayUnion([message.toJson()])
+    });
+    if (message.text != null && message.text != "") {
+      _store
+          .collection('chats')
+          .document(widget.chatDocumentId)
+          .updateData({"lastMessage": message.text});
+    }
   }
 
   void uploadImage(result) async {
@@ -102,125 +120,121 @@ class _ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: GFColors.DARK,
-          leading: InkWell(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: Icon(
-              CupertinoIcons.back,
-              color: GFColors.SUCCESS,
-            ),
-          ),
-          title: const Text(
-            'Person - 1',
-            style: TextStyle(fontSize: 17),
-          ),
-          centerTitle: true,
-          actions: <Widget>[
-            GFIconButton(
-              icon: Icon(
-                Icons.call,
-                color: Colors.blue,
+            backgroundColor: GFColors.DARK,
+            leading: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                CupertinoIcons.back,
+                color: GFColors.SUCCESS,
               ),
-              onPressed: () {},
-              type: GFButtonType.transparent,
             ),
-          ]
-        ),
-        body: DashChat(
-          key: _chatViewKey,
-          inverted: false,
-          onSend: onSend,
-          sendOnEnter: true,
-          textInputAction: TextInputAction.send,
-          user: user,
-          inputDecoration:
-              InputDecoration.collapsed(hintText: "Add message here..."),
-          dateFormat: DateFormat('yyyy-MMM-dd'),
-          timeFormat: DateFormat('HH:mm'),
-          messages: messages,
-          showUserAvatar: true,
-          showAvatarForEveryMessage: true,
-          scrollToBottom: true,
-          onPressAvatar: (ChatUser user) {
-            print("OnPressAvatar: ${user.name}");
-          },
-          onLongPressAvatar: (ChatUser user) {
-            print("OnLongPressAvatar: ${user.name}");
-          },
-          inputMaxLines: 5,
-          messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
-          alwaysShowSend: false,
-          inputTextStyle: TextStyle(fontSize: 16.0),
-          inputContainerStyle: BoxDecoration(
-            border: Border.all(width: 0.0),
-            color: Colors.white,
-          ),
-          onQuickReply: (Reply reply) {
-            setState(() {
-              messages.add(ChatMessage(
-                  text: reply.value, createdAt: DateTime.now(), user: user));
-
-              messages = [...messages];
-            });
-
-            Timer(Duration(milliseconds: 300), () {
-              _chatViewKey.currentState.scrollController
-                ..animateTo(
-                  _chatViewKey
-                      .currentState.scrollController.position.maxScrollExtent,
-                  curve: Curves.easeOut,
-                  duration: const Duration(milliseconds: 300),
+            title: Text(
+              widget.heading,
+              style: TextStyle(fontSize: 17),
+            ),
+            centerTitle: true,
+            actions: <Widget>[
+              GFIconButton(
+                icon: Icon(
+                  Icons.call,
+                  color: Colors.blue,
+                ),
+                onPressed: () {},
+                type: GFButtonType.transparent,
+              ),
+            ]),
+        body: StreamBuilder(
+            stream: Firestore.instance
+                .collection('messages')
+                .document(widget.messagesId)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).primaryColor,
+                    ),
+                  ),
                 );
-
-              if (i == 0) {
-                systemMessage();
-                Timer(Duration(milliseconds: 600), () {
-                  systemMessage();
-                });
               } else {
-                systemMessage();
+                DocumentSnapshot items = snapshot.data;
+                List msg = items.data["messages"] == null
+                    ? []
+                    : items.data["messages"];
+                List<ChatMessage> messages = [];
+                msg.forEach((item) => messages.add(ChatMessage.fromJson(item)));
+                return DashChat(
+                  key: _chatViewKey,
+                  inverted: false,
+                  onSend: onSend,
+                  sendOnEnter: true,
+                  textInputAction: TextInputAction.send,
+                  user: chatUser,
+                  inputDecoration: InputDecoration.collapsed(
+                      hintText: "Add message here..."),
+                  dateFormat: DateFormat('yyyy-MMM-dd'),
+                  timeFormat: DateFormat('HH:mm'),
+                  messages: messages,
+                  showUserAvatar: true,
+                  showAvatarForEveryMessage: true,
+                  scrollToBottom: true,
+                  onPressAvatar: (ChatUser user) {
+                    print("OnPressAvatar: ${user.name}");
+                  },
+                  onLongPressAvatar: (ChatUser user) {
+                    print("OnLongPressAvatar: ${user.name}");
+                  },
+                  inputMaxLines: 5,
+                  messageContainerPadding:
+                      EdgeInsets.only(left: 5.0, right: 5.0),
+                  alwaysShowSend: false,
+                  inputTextStyle: TextStyle(fontSize: 16.0),
+                  inputContainerStyle: BoxDecoration(
+                    border: Border.all(width: 0.0),
+                    color: Colors.white,
+                  ),
+                  onLoadEarlier: () {
+                    print("laoding...");
+                  },
+                  shouldShowLoadEarlier: false,
+                  showTraillingBeforeSend: true,
+                  // trailing: <Widget>[
+                  //   IconButton(
+                  //     icon: Icon(Icons.camera_alt),
+                  //     onPressed: () async {
+                  //       File result = await ImagePicker.pickImage(
+                  //         source: ImageSource.camera,
+                  //         imageQuality: 80,
+                  //         maxHeight: 400,
+                  //         maxWidth: 400,
+                  //       );
+
+                  //       if (result != null) {
+                  //         uploadImage(result);
+                  //       }
+                  //     },
+                  //   ),
+                  //   IconButton(
+                  //     icon: Icon(Icons.photo),
+                  //     onPressed: () async {
+                  //       File result = await ImagePicker.pickImage(
+                  //         source: ImageSource.gallery,
+                  //         imageQuality: 80,
+                  //         maxHeight: 400,
+                  //         maxWidth: 400,
+                  //       );
+
+                  //       if (result != null) {
+                  //         uploadImage(result);
+                  //       }
+                  //     },
+                  //   ),
+                  // ],
+                );
               }
-            });
-          },
-          onLoadEarlier: () {
-            print("laoding...");
-          },
-          shouldShowLoadEarlier: false,
-          showTraillingBeforeSend: true,
-          trailing: <Widget>[
-            IconButton(
-              icon: Icon(Icons.camera_alt),
-              onPressed: () async {
-                File result = await ImagePicker.pickImage(
-                  source: ImageSource.camera,
-                  imageQuality: 80,
-                  maxHeight: 400,
-                  maxWidth: 400,
-                );
-
-                if (result != null) {
-                  uploadImage(result);
-                }
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.photo),
-              onPressed: () async {
-                File result = await ImagePicker.pickImage(
-                  source: ImageSource.gallery,
-                  imageQuality: 80,
-                  maxHeight: 400,
-                  maxWidth: 400,
-                );
-
-                if (result != null) {
-                  uploadImage(result);
-                }
-              },
-            ),
-          ],
-        ));
+            }));
   }
 }

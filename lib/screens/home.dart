@@ -7,7 +7,6 @@ import 'package:openemr/screens/login/login2.dart';
 import 'package:openemr/screens/medicine/medicine_recognition.dart';
 import 'package:openemr/screens/patientList/patient_list.dart';
 import 'package:openemr/screens/ppg/heartRate.dart';
-import 'package:openemr/screens/telehealth/chat.dart';
 import 'package:openemr/screens/telehealth/telehealth.dart';
 import 'package:openemr/utils/rest_ds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,14 +32,6 @@ class _HomePageState extends State<HomePage> {
       'authentication': "firebase",
       'failRoute': LoginFirebaseScreen(),
       'route': Telehealth()
-    },
-    {
-      'icon': const IconData(
-        0xe901,
-        fontFamily: 'GFFontIcons',
-      ),
-      'title': 'Chats',
-      'route': Chat()
     },
     {
       'icon': Icons.people,

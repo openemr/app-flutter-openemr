@@ -198,7 +198,7 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
     await _store
         .collection('username')
         .document(user.uid)
-        .setData({"conversationId": {}, "id": _userid, "name": _name});
+        .setData({"id": _userid, "name": _name});
     try {
       UserUpdateInfo updateInfo = UserUpdateInfo();
       updateInfo.displayName = _name;
