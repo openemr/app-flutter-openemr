@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:openemr/screens/telehealth/profile.dart';
 
 class Telehealth extends StatefulWidget {
   @override
@@ -9,6 +11,8 @@ class Telehealth extends StatefulWidget {
 
 class _TelehealthState extends State<Telehealth>
     with SingleTickerProviderStateMixin {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseUser user;
   var listToShow = [
     'T 0',
     'T 1',
@@ -37,7 +41,15 @@ class _TelehealthState extends State<Telehealth>
   @override
   void initState() {
     super.initState();
+    getInfo();
     tabController = TabController(length: 4, vsync: this);
+  }
+
+  getInfo() async {
+    user = await _auth.currentUser();
+    this.setState(() {
+      user = user;
+    });
   }
 
   @override
@@ -66,6 +78,17 @@ class _TelehealthState extends State<Telehealth>
             style: TextStyle(fontSize: 17),
           ),
           centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              tooltip: "Logout",
+              color: GFColors.DANGER,
+              onPressed: () async {
+                await _auth.signOut();
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+              },
+            ),
+          ],
         ),
         body: Container(
             height: MediaQuery.of(context).size.height,
@@ -90,8 +113,38 @@ class _TelehealthState extends State<Telehealth>
                             backgroundImage:
                                 AssetImage('lib/assets/images/avatar8.png'),
                           ),
-                          titleText: 'Amit Meena',
-                          subtitleText: 'Nurse',
+                          titleText: user != null
+                              ? user.displayName != null
+                                  ? user.displayName
+                                  : "Use edit icon on left to update"
+                              : "Invalid User",
+                          icon: Row(
+                            children: [
+                              GFIconButton(
+                                onPressed: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            FirebaseProfileScreen()),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: GFColors.DANGER,
+                                ),
+                                type: GFButtonType.transparent,
+                              ),
+                              GFIconButton(
+                                onPressed: getInfo,
+                                icon: Icon(
+                                  Icons.refresh,
+                                  color: GFColors.PRIMARY,
+                                ),
+                                type: GFButtonType.transparent,
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ],

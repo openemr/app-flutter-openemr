@@ -1,23 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
-import 'package:openemr/screens/register/register.dart';
+import 'package:openemr/screens/login/login2.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LoginFirebaseScreen extends StatefulWidget {
+class RegisterFirebaseScreen extends StatefulWidget {
   @override
-  _LoginFirebaseScreenState createState() => _LoginFirebaseScreenState();
+  _RegisterFirebaseScreenState createState() => _RegisterFirebaseScreenState();
 }
 
-class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
+class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Firestore _store = Firestore.instance;
 
   User user;
 
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
-  String _email, _password;
+  String _email, _password, _name, _userid;
 
   void _showSnackBar(String text) {
     scaffoldKey.currentState
@@ -61,6 +63,40 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
                         child: TextFormField(
                           validator: (value) {
                             if (value.isEmpty) {
+                              return 'Please enter your full name';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => _name = val,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Full Name'),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Username can\'t be blank';
+                            }
+                            return null;
+                          },
+                          onSaved: (val) => _userid = val,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Username'),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value.isEmpty) {
                               return 'Please enter your email';
                             }
                             return null;
@@ -93,13 +129,13 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
                         height: 20,
                       ),
                       GFButton(
-                        onPressed: () => handleSignIn(context),
-                        text: 'login',
+                        onPressed: () => handleRegister(context),
+                        text: 'Register',
                         color: GFColors.DARK,
                       ),
                       GFButton(
-                        onPressed: () => handleRegister(context),
-                        text: 'Register',
+                        onPressed: () => handleSignIn(context),
+                        text: 'login',
                         color: GFColors.DARK,
                         type: GFButtonType.outline2x,
                       ),
@@ -113,34 +149,42 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
   }
 
   void handleSignIn(context) async {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (BuildContext context) => LoginFirebaseScreen()),
+    );
+  }
+
+  void handleRegister(context) async {
     FirebaseUser user;
     String errorMessage;
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
+      QuerySnapshot ref = await _store
+          .collection('username')
+          .where("id", isEqualTo: _userid)
+          .snapshots()
+          .first;
+      if (ref.documentChanges.isNotEmpty) {
+        _showSnackBar("Username already exist");
+        return null;
+      }
       try {
-        AuthResult result = await _auth.signInWithEmailAndPassword(
+        AuthResult result = await _auth.createUserWithEmailAndPassword(
             email: _email, password: _password);
         user = result.user;
       } catch (error) {
         switch (error.code) {
+          case "ERROR_WEAK_PASSWORD":
+            errorMessage = "Your password appears to be weak.";
+            break;
           case "ERROR_INVALID_EMAIL":
             errorMessage = "Your email address appears to be malformed.";
             break;
-          case "ERROR_WRONG_PASSWORD":
-            errorMessage = "Your password is wrong.";
-            break;
-          case "ERROR_USER_NOT_FOUND":
-            errorMessage = "User with this email doesn't exist.";
-            break;
-          case "ERROR_USER_DISABLED":
-            errorMessage = "User with this email has been disabled.";
-            break;
-          case "ERROR_TOO_MANY_REQUESTS":
-            errorMessage = "Too many requests. Try again later.";
-            break;
-          case "ERROR_OPERATION_NOT_ALLOWED":
-            errorMessage = "Signing in with Email and Password is not enabled.";
+          case "ERROR_EMAIL_ALREADY_IN_USE":
+            errorMessage = "User with this email already exist.";
             break;
           default:
             errorMessage = "An undefined Error happened.";
@@ -149,21 +193,37 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
     }
     if (errorMessage != null) {
       _showSnackBar(errorMessage);
-    } else {
-      if (!user.isEmailVerified) {
-        _showSnackBar("Email not verified");
-        await _auth.signOut();
-      } else {
-        Navigator.pop(context);
+      return null;
+    }
+    await _store
+        .collection('username')
+        .document(user.uid)
+        .setData({"conversationId": {}, "id": _userid, "name": _name});
+    try {
+      UserUpdateInfo updateInfo = UserUpdateInfo();
+      updateInfo.displayName = _name;
+      await user.updateProfile(updateInfo);
+    } catch (error) {
+      switch (error.code) {
+        case "ERROR_USER_DISABLED":
+          errorMessage = "Your acount has been disabled";
+          break;
+        case "ERROR_USER_NOT_FOUND":
+          errorMessage = "Account not found";
+          break;
+        default:
+          errorMessage = "An undefined Error happened.";
       }
     }
-  }
-
-  void handleRegister(context) async {
+    if (errorMessage != null) {
+      _showSnackBar(errorMessage);
+      return null;
+    }
+    await user.sendEmailVerification();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (BuildContext context) => RegisterFirebaseScreen()),
+          builder: (BuildContext context) => LoginFirebaseScreen()),
     );
   }
 }
