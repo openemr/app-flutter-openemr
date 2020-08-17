@@ -27,6 +27,10 @@ To run openemr in a device
 flutter pub get
 flutter run
 ```
+### How to use calling feature
+1. Run the [app-golang-openemr](https://github.com/openemr/app-golang-openemr/tree/c6930bb8f84e572234daaa071add316334a247f5)
+2. Enter the server ip address in the prompt  
+   ![](./img/ip.gif)
 
 ### How to Setup Firebase
 
