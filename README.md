@@ -2,6 +2,16 @@
 
 [OpenEMR](https://open-emr.org) is the most popular open source electronic health records and medical practice management solution. [ONC certified](https://open-emr.org/wiki/index.php/OpenEMR_Wiki_Home_Page#ONC_Ambulatory_EHR_Certification) with international usage, OpenEMR's goal is a superior alternative to its proprietary counterparts.
 
+## Version Info
+`2.0` -> Current Version  
+`2.1` -> Image sharing and Video calling in chat  
+`2.2` -> Medicine recognition  
+.  
+.  
+.  
+`3.0` -> All OpenEMR API will be support
+
+
 ## For Developers
 
 If using OpenEMR directly from the code repository, then the following commands will build OpenEMR apk :

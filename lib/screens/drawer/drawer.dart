@@ -152,7 +152,7 @@ class _DrawerPageState extends State<DrawerPage> {
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 2),
-                    child: Text("v1.0"),
+                    child: Text("v2.0"),
                   ),
                 ],
               ),
