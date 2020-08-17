@@ -121,17 +121,7 @@ class _ChatScreenState extends State<ChatScreen> {
               widget.heading,
               style: TextStyle(fontSize: 17),
             ),
-            centerTitle: true,
-            actions: <Widget>[
-              GFIconButton(
-                icon: Icon(
-                  Icons.call,
-                  color: Colors.blue,
-                ),
-                onPressed: () {},
-                type: GFButtonType.transparent,
-              ),
-            ]),
+            centerTitle: true,),
         body: StreamBuilder(
             stream: Firestore.instance
                 .collection('messages')

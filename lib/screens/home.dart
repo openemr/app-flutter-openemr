@@ -41,8 +41,8 @@ class _HomePageState extends State<HomePage> {
       'failRoute': LoginScreen()
     },
     {
-      'icon': Icons.info,
-      'title': 'Medicine',
+      'icon': Icons.translate,
+      'title': 'Text Recognition',
       'route': MedicineRecognitionPage()
     },
     {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:openemr/models/patient.dart';
 import 'package:openemr/utils/network.dart';
@@ -55,6 +56,14 @@ class RestDatasource {
       "race": "",
       "ethnicity": ""
     }).then((dynamic res) {
+      return res;
+    });
+  }
+
+  Future<dynamic> textRecognition(File img, ip) {
+    return _netUtil
+        .upload("https://" + ip + ":8086/ocrImage", img)
+        .then((dynamic res) {
       return res;
     });
   }
