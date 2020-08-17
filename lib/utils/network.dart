@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
-
+import 'package:http_parser/http_parser.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 import 'common.dart';
 
 class NetworkUtil {
@@ -45,5 +48,37 @@ class NetworkUtil {
       }
       return _decoder.convert(res);
     });
+  }
+
+  Future<dynamic> upload(String url, File img) async {
+    if (!isValidUrl(url)) {
+      return Future.error("Invalid API URL");
+    }
+
+    try {
+      var stream = new http.ByteStream(DelegatingStream.typed(img.openRead()));
+      var length = await img.length();
+
+      var uri = Uri.parse(url);
+
+      var request = new http.MultipartRequest("POST", uri);
+      var multipartFile = new http.MultipartFile('image', stream, length,
+          filename: basename(img.path),
+          contentType: new MediaType('image', 'jpeg'));
+
+      request.files.add(multipartFile);
+      var response = await request.send();
+      final int statusCode = response.statusCode;
+      if (statusCode == 401) {
+        throw new Exception(statusCode.toString() + "Invalid Credentials");
+      } else if (statusCode < 200 || statusCode > 400 || json == null) {
+        throw new Exception(
+            statusCode.toString() + "Error while fetching data");
+      }
+      var data = await response.stream.bytesToString();
+      return {"err": null, "data": data};
+    } catch (err) {
+      return {"err": err, "data": null};
+    }
   }
 }

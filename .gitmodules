@@ -1,0 +1,3 @@
+[submodule "app-golang-openemr"]
+	path = app-golang-openemr
+	url = https://github.com/openemr/app-golang-openemr
