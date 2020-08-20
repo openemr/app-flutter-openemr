@@ -97,6 +97,19 @@ class _PatientListPageState extends State<PatientListPage> {
                       builder: (BuildContext context) => AddPatientScreen()),
                 );
               },
+            ),
+            IconButton(
+              icon: Icon(Icons.exit_to_app),
+              tooltip: "Logout",
+              color: GFColors.DANGER,
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('token');
+                prefs.remove('username');
+                prefs.remove('password');
+                prefs.remove('baseUrl');
+                Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
+              },
             )
           ],
         ),

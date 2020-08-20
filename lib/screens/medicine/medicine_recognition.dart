@@ -123,7 +123,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.settings),
-              tooltip: "Logout",
+              tooltip: "Settings",
               color: GFColors.DANGER,
               onPressed: () => _updateServerIp(),
             ),
