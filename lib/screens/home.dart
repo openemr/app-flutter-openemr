@@ -11,7 +11,6 @@ import 'package:openemr/screens/telehealth/telehealth.dart';
 import 'package:openemr/utils/rest_ds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/drawer/drawer.dart';
-// import '../screens/shimmer/shimmer.dart';
 import 'login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

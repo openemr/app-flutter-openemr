@@ -143,7 +143,9 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
             errorMessage = "Signing in with Email and Password is not enabled.";
             break;
           default:
-            errorMessage = "An undefined Error happened.";
+            errorMessage = error.code == null
+                ? "An undefined Error happened."
+                : error.code;
         }
       }
     }

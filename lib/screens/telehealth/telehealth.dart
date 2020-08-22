@@ -156,7 +156,9 @@ class _TelehealthState extends State<Telehealth>
 
   @override
   void dispose() {
-    tabController.dispose();
+    if (tabController != null) {
+      tabController.dispose();
+    }
     super.dispose();
   }
 

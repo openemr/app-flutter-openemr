@@ -26,7 +26,6 @@ typedef void DataChannelCallback(RTCDataChannel dc);
 
 class Signaling {
   JsonEncoder _encoder = new JsonEncoder();
-  JsonDecoder _decoder = new JsonDecoder();
   String _selfId;
   SimpleWebSocket _socket;
   var _sessionId;
@@ -35,7 +34,6 @@ class Signaling {
   var _peerConnections = new Map<String, RTCPeerConnection>();
   var _dataChannels = new Map<String, RTCDataChannel>();
   var _remoteCandidates = [];
-  var _turnCredential;
 
   MediaStream _localStream;
   List<MediaStream> _remoteStreams;
@@ -68,7 +66,7 @@ class Signaling {
     'optional': [],
   };
 
-  final Map<String, dynamic> _dc_constraints = {
+  final Map<String, dynamic> _dcConstraints = {
     'mandatory': {
       'OfferToReceiveAudio': false,
       'OfferToReceiveVideo': false,
@@ -96,19 +94,19 @@ class Signaling {
     }
   }
 
-  void invite(String peer_id, String media) {
-    this._sessionId = this._selfId + '-' + peer_id;
+  void invite(String peerId, String media) {
+    this._sessionId = this._selfId + '-' + peerId;
 
     if (this.onStateChange != null) {
       this.onStateChange(SignalingState.CallStateNew);
     }
 
-    _createPeerConnection(peer_id, media).then((pc) {
-      _peerConnections[peer_id] = pc;
+    _createPeerConnection(peerId, media).then((pc) {
+      _peerConnections[peerId] = pc;
       if (media == 'data') {
-        _createDataChannel(peer_id, pc);
+        _createDataChannel(peerId, pc);
       }
-      _createOffer(peer_id, pc, media);
+      _createOffer(peerId, pc, media);
     });
   }
 
@@ -353,8 +351,8 @@ class Signaling {
 
   _createOffer(String id, RTCPeerConnection pc, String media) async {
     try {
-      RTCSessionDescription s = await pc
-          .createOffer(media == 'data' ? _dc_constraints : _constraints);
+      RTCSessionDescription s =
+          await pc.createOffer(media == 'data' ? _dcConstraints : _constraints);
       pc.setLocalDescription(s);
       _send('offer', {
         'to': id,
@@ -371,7 +369,7 @@ class Signaling {
   _createAnswer(String id, RTCPeerConnection pc, media) async {
     try {
       RTCSessionDescription s = await pc
-          .createAnswer(media == 'data' ? _dc_constraints : _constraints);
+          .createAnswer(media == 'data' ? _dcConstraints : _constraints);
       pc.setLocalDescription(s);
       _send('answer', {
         'to': id,

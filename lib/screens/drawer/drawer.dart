@@ -123,11 +123,11 @@ class _DrawerPageState extends State<DrawerPage> {
                   Divider(color: GFColors.FOCUS, indent: 20, endIndent: 30),
                   const Padding(
                     padding: EdgeInsets.only(left: 2),
-                    child: Text("Last update: 08/18/20"),
+                    child: Text("Last update: 08/22/20"),
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 2),
-                    child: Text("v2.1"),
+                    child: Text("v2.1.1"),
                   ),
                 ],
               ),
