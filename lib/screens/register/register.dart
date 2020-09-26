@@ -223,10 +223,13 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       return null;
     }
     await user.sendEmailVerification();
+    await _auth.signOut();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (BuildContext context) => LoginFirebaseScreen()),
+          builder: (BuildContext context) => LoginFirebaseScreen(
+              message:
+                  'Successfully Registered. An e-mail has been sent, please verify')),
     );
   }
 }

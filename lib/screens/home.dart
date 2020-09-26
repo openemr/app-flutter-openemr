@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final firebaseFlag = false;
+  final firebaseFlag = true;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
           } else if (auth == "firebase") {
             if (firebaseFlag) {
               var user = await _auth.currentUser();
-              if (user != null) {
+              if (user != null && user.isEmailVerified) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => route),
