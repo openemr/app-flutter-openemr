@@ -228,8 +228,8 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       context,
       MaterialPageRoute(
           builder: (BuildContext context) => LoginFirebaseScreen(
-              message:
-                  'Successfully Registered. An e-mail has been sent, please verify')),
+              snackBarMessage:
+                  'A verification link has been sent to your e-mail account')),
     );
   }
 }

@@ -6,9 +6,9 @@ import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginFirebaseScreen extends StatefulWidget {
-  final String message;
+  final String snackBarMessage;
 
-  LoginFirebaseScreen({this.message});
+  LoginFirebaseScreen({this.snackBarMessage});
 
   @override
   _LoginFirebaseScreenState createState() => _LoginFirebaseScreenState();
@@ -25,9 +25,9 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
 
   @override
   void initState() {
-    new Future.delayed(Duration.zero, () {
-      if (widget.message != null) {
-        _showSnackBar(widget.message);
+    Future.delayed(Duration.zero, () {
+      if (widget.snackBarMessage != null) {
+        _showSnackBar(widget.snackBarMessage);
       }
     });
     super.initState();
