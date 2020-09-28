@@ -6,6 +6,10 @@ import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginFirebaseScreen extends StatefulWidget {
+  final String snackBarMessage;
+
+  LoginFirebaseScreen({this.snackBarMessage});
+
   @override
   _LoginFirebaseScreenState createState() => _LoginFirebaseScreenState();
 }
@@ -18,6 +22,16 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _email, _password;
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      if (widget.snackBarMessage != null) {
+        _showSnackBar(widget.snackBarMessage);
+      }
+    });
+    super.initState();
+  }
 
   void _showSnackBar(String text) {
     scaffoldKey.currentState
