@@ -242,11 +242,14 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       return null;
     }
     await user.sendEmailVerification();
+    await _auth.signOut();
     _toggleLoadingStatus();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (BuildContext context) => LoginFirebaseScreen()),
+          builder: (BuildContext context) => LoginFirebaseScreen(
+              snackBarMessage:
+                  'A verification link has been sent to your e-mail account')),
     );
   }
 }
