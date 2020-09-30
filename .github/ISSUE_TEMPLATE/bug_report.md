@@ -1,3 +1,8 @@
+---
+name: Bug Request
+about: Report any bugs present in the code
+---
+
 **Expected Behavior**
 
 **Actual Behavior**
