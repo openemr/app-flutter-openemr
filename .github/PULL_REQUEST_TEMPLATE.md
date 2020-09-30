@@ -4,7 +4,7 @@ Please provide enough information so that others can review your pull request:
 
 **Description**
 
-Describe your code changes in detail for the Reviewers. Explian the technical solution you have provided and how it solves the issue.
+Describe your code changes in detail for the Reviewers. Explain the technical solution you have provided and how it solves the issue.
 
 **Testing Methods**
 
