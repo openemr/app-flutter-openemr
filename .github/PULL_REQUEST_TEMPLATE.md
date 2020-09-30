@@ -1,25 +1,23 @@
 **IMPORTANT: Please do not create a Pull Request without creating an issue first.**
 
-_Any change needs to be discussed before proceeding. Failure to do so may result in the rejection of the pull request._
-
 Please provide enough information so that others can review your pull request:
 
-<!-- You can skip this if you're fixing a typo or adding an app to the Showcase. -->
+**Description**
 
-Explain the **details** for making this change. What existing problem does the pull request solve?
+Describe your code changes in detail for the Reviewers. Explian the technical solution you have provided and how it solves the issue.
 
-<!-- Example: When "Adding a function to do X", explain why it is necessary to have a way to do X. -->
+**Testing Methods**
 
-**Test plan (required)**
+What testing methods did you implement to ensure your fixes are working?
 
-Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI.
+**Screenshots/Videos**
 
-<!-- Make sure tests pass on both Travis and Circle CI. -->
+Attach any screenshots or videos, if available, displaying the mentioned changes.
 
-**Code formatting**
+**New Packages Added**
 
-<!-- See the simple style guide. -->
+Did you add new packages while making the changes? List them along with a link to the package and the reason behind adding it.
 
-**Closing issues**
+**Closing Issues**
 
 Put `closes #XXXX` in your comment to auto-close the issue that your PR fixes (if such).
