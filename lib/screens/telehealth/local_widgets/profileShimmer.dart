@@ -9,6 +9,14 @@ Widget profileShimmer(BuildContext context) {
       SizedBox(
         height: 40,
       ),
+      Container(
+        height: 100,
+        width: MediaQuery.of(context).size.width * 0.8,
+        color: Colors.white,
+      ),
+      SizedBox(
+        height: 10,
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
