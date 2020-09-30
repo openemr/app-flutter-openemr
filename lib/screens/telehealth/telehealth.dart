@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_shimmer/flutter_shimmer.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:openemr/screens/telehealth/chat.dart';
+import 'package:openemr/screens/telehealth/local_widgets/profileShimmer.dart';
 import 'package:openemr/screens/telehealth/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:openemr/screens/telehealth/signaling.dart';
@@ -366,9 +366,7 @@ class _TelehealthState extends State<Telehealth>
                   controller: tabController,
                   children: <Widget>[
                     user == null
-                        ? ProfilePageShimmer(
-                            hasBottomBox: true,
-                          )
+                        ? profileShimmer(context)
                         : Container(
                             child: ListView(
                               children: <Widget>[

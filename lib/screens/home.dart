@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final firebaseFlag = false;
+  final firebaseFlag = true;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
