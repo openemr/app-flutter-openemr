@@ -1,5 +1,5 @@
 ---
-name: Bug Request
+name: Bug Report
 about: Report any bugs present in the code
 ---
 
