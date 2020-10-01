@@ -227,9 +227,7 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (BuildContext context) => LoginFirebaseScreen(
-              snackBarMessage:
-                  'A verification link has been sent to your e-mail account')),
+          builder: (BuildContext context) => LoginFirebaseScreen()),
     );
   }
 }
