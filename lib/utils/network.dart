@@ -56,7 +56,7 @@ class NetworkUtil {
     }
 
     try {
-      var stream = new http.ByteStream(DelegatingStream.typed(img.openRead()));
+      var stream = new http.ByteStream(stream.cast(img.openRead()));
       var length = await img.length();
 
       var uri = Uri.parse(url);

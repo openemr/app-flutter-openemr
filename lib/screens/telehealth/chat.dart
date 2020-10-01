@@ -182,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       icon: Icon(Icons.camera_alt),
                       onPressed: () async {
-                        File result = await ImagePicker.pickImage(
+                        File result = await ImagePicker.getImage(
                           source: ImageSource.camera,
                           imageQuality: 80,
                           maxHeight: 400,
@@ -197,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       icon: Icon(Icons.photo),
                       onPressed: () async {
-                        File result = await ImagePicker.pickImage(
+                        File result = await ImagePicker.getImage(
                           source: ImageSource.gallery,
                           imageQuality: 80,
                           maxHeight: 400,

@@ -147,7 +147,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               heroTag: null,
               backgroundColor: GFColors.DARK,
               onPressed: () async {
-                File result = await ImagePicker.pickImage(
+                File result = await ImagePicker.getImage(
                   source: ImageSource.camera,
                   imageQuality: 80,
                   maxHeight: 400,
@@ -164,7 +164,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               heroTag: null,
               backgroundColor: GFColors.DARK,
               onPressed: () async {
-                File result = await ImagePicker.pickImage(
+                File result = await ImagePicker.getImage(
                   source: ImageSource.gallery,
                   imageQuality: 80,
                   maxHeight: 400,
