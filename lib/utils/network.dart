@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
-import 'package:async/async.dart';
 import 'common.dart';
 
 class NetworkUtil {
@@ -56,13 +55,13 @@ class NetworkUtil {
     }
 
     try {
-      var stream = new http.ByteStream(DelegatingStream.typed(img.openRead()));
+      var streamed = new http.ByteStream(Stream.castFrom(img.openRead()));
       var length = await img.length();
 
       var uri = Uri.parse(url);
 
       var request = new http.MultipartRequest("POST", uri);
-      var multipartFile = new http.MultipartFile('image', stream, length,
+      var multipartFile = new http.MultipartFile('image', streamed, length,
           filename: basename(img.path),
           contentType: new MediaType('image', 'jpeg'));
 
