@@ -148,7 +148,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               heroTag: null,
               backgroundColor: GFColors.DARK,
               onPressed: () async {
-               final pickedFile = await picker.getImage(
+              final pickedFile = await picker.getImage(
                   source: ImageSource.camera,
                   imageQuality: 80,
                   maxHeight: 400,
@@ -156,11 +156,6 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
                 );
                 if (pickedFile != null) {
                   File result = File(pickedFile.path);
-                  _translateImage(result);
-                }
-                );
-
-                if (result != null) {
                   _translateImage(result);
                 }
               },
@@ -171,21 +166,17 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               backgroundColor: GFColors.DARK,
               onPressed: () async {
                  final pickedFile = await picker.getImage(
-                  source: ImageSource.gallery,
-                  imageQuality: 80,
-                  maxHeight: 400,
-                  maxWidth: 400,
-                );
-                if (pickedFile != null) {
-                  File result = File(pickedFile.path);
-                  _translateImage(result);
-                }
-                );
+                          source: ImageSource.camera,
+                          imageQuality: 80,
+                          maxHeight: 400,
+                          maxWidth: 400,
+                        );
 
-                if (result != null) {
-                  _translateImage(result);
-                }
-              },
+                        if (pickedFile != null) {
+                          File result = File(pickedFile.path);
+                          uploadImage(result);
+                        }
+                      },
               child: Icon(Icons.file_upload),
             )
           ],
