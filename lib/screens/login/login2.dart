@@ -40,9 +40,9 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
-  void _toggleLoadingStatus() {
+  void _toggleLoadingStatus(bool newLoadingState) {
     setState(() {
-      _isLoading = !_isLoading;
+      _isLoading = newLoadingState;
     });
   }
 
@@ -145,7 +145,7 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
     FirebaseUser user;
     String errorMessage;
     final form = formKey.currentState;
-    _toggleLoadingStatus();
+    _toggleLoadingStatus(true);
     if (form.validate()) {
       form.save();
       try {
@@ -179,7 +179,7 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
         }
       }
     }
-    _toggleLoadingStatus();
+    _toggleLoadingStatus(false);
     if (errorMessage != null) {
       _showSnackBar(errorMessage);
     } else {

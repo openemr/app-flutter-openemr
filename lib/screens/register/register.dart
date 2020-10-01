@@ -28,9 +28,9 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
-  void _toggleLoadingStatus() {
+  void _toggleLoadingStatus(bool newLoadingState) {
     setState(() {
-      _isLoading = !_isLoading;
+      _isLoading = newLoadingState;
     });
   }
 
@@ -177,14 +177,14 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
-      _toggleLoadingStatus();
+      _toggleLoadingStatus(true);
       QuerySnapshot ref = await _store
           .collection('username')
           .where("id", isEqualTo: _userid)
           .snapshots()
           .first;
       if (ref.documentChanges.isNotEmpty) {
-        _toggleLoadingStatus();
+        _toggleLoadingStatus(false);
         _showSnackBar("Username already exist");
         return null;
       }
@@ -211,7 +211,7 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       }
     }
     if (errorMessage != null) {
-      _toggleLoadingStatus();
+      _toggleLoadingStatus(false);
       _showSnackBar(errorMessage);
       return null;
     }
@@ -237,13 +237,13 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       }
     }
     if (errorMessage != null) {
-      _toggleLoadingStatus();
+      _toggleLoadingStatus(false);
       _showSnackBar(errorMessage);
       return null;
     }
     await user.sendEmailVerification();
     await _auth.signOut();
-    _toggleLoadingStatus();
+    _toggleLoadingStatus(false);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
