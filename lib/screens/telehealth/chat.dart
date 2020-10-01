@@ -34,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
   final Firestore _store = Firestore.instance;
   ChatUser chatUser;
+  final picker = ImagePicker();
 
   List<ChatMessage> messages = List<ChatMessage>();
   var m = List<ChatMessage>();
@@ -182,14 +183,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       icon: Icon(Icons.camera_alt),
                       onPressed: () async {
-                        File result = await ImagePicker.pickImage(
+                        final pickedFile = await picker.getImage(
                           source: ImageSource.camera,
                           imageQuality: 80,
                           maxHeight: 400,
                           maxWidth: 400,
                         );
 
-                        if (result != null) {
+                        if (pickedFile != null) {
+                          File result = File(pickedFile.path);
                           uploadImage(result);
                         }
                       },
@@ -197,14 +199,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       icon: Icon(Icons.photo),
                       onPressed: () async {
-                        File result = await ImagePicker.pickImage(
-                          source: ImageSource.gallery,
+                           final pickedFile = await picker.getImage(
+                          source: ImageSource.camera,
                           imageQuality: 80,
                           maxHeight: 400,
                           maxWidth: 400,
                         );
 
-                        if (result != null) {
+                        if (pickedFile != null) {
+                          File result = File(pickedFile.path);
                           uploadImage(result);
                         }
                       },
