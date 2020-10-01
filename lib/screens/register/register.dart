@@ -223,7 +223,6 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       return null;
     }
     await user.sendEmailVerification();
-    await _auth.signOut();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
