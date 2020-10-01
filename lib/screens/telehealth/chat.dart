@@ -200,7 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       icon: Icon(Icons.photo),
                       onPressed: () async {
                            final pickedFile = await picker.getImage(
-                          source: ImageSource.camera,
+                          source: ImageSource.gallery,
                           imageQuality: 80,
                           maxHeight: 400,
                           maxWidth: 400,
