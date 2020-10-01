@@ -18,6 +18,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
   String serverIP = "";
   String tempIP = "";
   final scaffoldKey = new GlobalKey<ScaffoldState>();
+  final picker = ImagePicker();
   @override
   void initState() {
     _loadIp();
@@ -147,11 +148,16 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               heroTag: null,
               backgroundColor: GFColors.DARK,
               onPressed: () async {
-                File result = await ImagePicker.pickImage(
+               final pickedFile = await picker.getImage(
                   source: ImageSource.camera,
                   imageQuality: 80,
                   maxHeight: 400,
                   maxWidth: 400,
+                );
+                if (pickedFile != null) {
+                  File result = File(pickedFile.path);
+                  _translateImage(result);
+                }
                 );
 
                 if (result != null) {
@@ -164,11 +170,16 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               heroTag: null,
               backgroundColor: GFColors.DARK,
               onPressed: () async {
-                File result = await ImagePicker.pickImage(
-                  source: ImageSource.gallery,
+                 final pickedFile = await picker.getImage(
+                  source: ImageSource.camera,
                   imageQuality: 80,
                   maxHeight: 400,
                   maxWidth: 400,
+                );
+                if (pickedFile != null) {
+                  File result = File(pickedFile.path);
+                  _translateImage(result);
+                }
                 );
 
                 if (result != null) {
