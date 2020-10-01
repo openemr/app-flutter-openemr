@@ -175,6 +175,7 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
                   File result = File(pickedFile.path);
                   _translateImage(result);
                 }
+              },
               child: Icon(Icons.file_upload),
             )
           ],
