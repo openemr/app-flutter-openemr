@@ -166,17 +166,15 @@ class _MedicineRecognitionPageState extends State<MedicineRecognitionPage> {
               backgroundColor: GFColors.DARK,
               onPressed: () async {
                  final pickedFile = await picker.getImage(
-                          source: ImageSource.camera,
-                          imageQuality: 80,
-                          maxHeight: 400,
-                          maxWidth: 400,
-                        );
-
-                        if (pickedFile != null) {
-                          File result = File(pickedFile.path);
-                          uploadImage(result);
-                        }
-                      },
+                  source: ImageSource.gallery,
+                  imageQuality: 80,
+                  maxHeight: 400,
+                  maxWidth: 400,
+                );
+                if (pickedFile != null) {
+                  File result = File(pickedFile.path);
+                  _translateImage(result);
+                }
               child: Icon(Icons.file_upload),
             )
           ],
