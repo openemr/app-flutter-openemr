@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
-import 'package:async/async.dart';
 import 'common.dart';
 
 class NetworkUtil {
