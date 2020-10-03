@@ -158,7 +158,6 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
 
   void handleRegister(context) async {
     FirebaseUser user;
-    String errorMessage;
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
@@ -176,26 +175,13 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
             email: _email, password: _password);
         user = result.user;
       } catch (error) {
-        switch (error.code) {
-          case "ERROR_WEAK_PASSWORD":
-            errorMessage = "Your password appears to be weak.";
-            break;
-          case "ERROR_INVALID_EMAIL":
-            errorMessage = "Your email address appears to be malformed.";
-            break;
-          case "ERROR_EMAIL_ALREADY_IN_USE":
-            errorMessage = "User with this email already exist.";
-            break;
-          default:
-            errorMessage = error.code == null
-                ? "An undefined Error happened."
-                : error.code;
+        if (error.message != null) {
+          _showSnackBar(error.message);
+        } else {
+          _showSnackBar('An unexpected error occured!');
         }
+        return null;
       }
-    }
-    if (errorMessage != null) {
-      _showSnackBar(errorMessage);
-      return null;
     }
     await _store
         .collection('username')
@@ -206,20 +192,11 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
       updateInfo.displayName = _name;
       await user.updateProfile(updateInfo);
     } catch (error) {
-      switch (error.code) {
-        case "ERROR_USER_DISABLED":
-          errorMessage = "Your acount has been disabled";
-          break;
-        case "ERROR_USER_NOT_FOUND":
-          errorMessage = "Account not found";
-          break;
-        default:
-          errorMessage =
-              error.code == null ? "An undefined Error happened." : error.code;
+      if (error.message != null) {
+        _showSnackBar(error.message);
+      } else {
+        _showSnackBar('An unexpected error occured!');
       }
-    }
-    if (errorMessage != null) {
-      _showSnackBar(errorMessage);
       return null;
     }
     await user.sendEmailVerification();
