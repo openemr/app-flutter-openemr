@@ -9,9 +9,9 @@
 
 ## Version Info
 `2.1.1` -> Current Version  
-`2.1.2` -> Add Loading screens  
-`2.1.3` -> Remove deprecated function  
-`2.1.4` -> Error message based on API response  
+`2.1.2` -> Add Loading screens (Under Review)
+`2.1.3` -> Remove deprecated function (Completed) 
+`2.1.4` -> Error message based on API response (In Progress)
 `2.2` -> Medicine recognition
 .  
 .  
