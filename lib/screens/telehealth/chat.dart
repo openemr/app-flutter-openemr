@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:openemr/utils/customlistloadingshimmer.dart';
 
 class ChatScreen extends StatefulWidget {
   final String messagesId;
@@ -108,34 +109,34 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: GFColors.DARK,
-            leading: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(
-                CupertinoIcons.back,
-                color: GFColors.SUCCESS,
-              ),
+          backgroundColor: GFColors.DARK,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              CupertinoIcons.back,
+              color: GFColors.SUCCESS,
             ),
-            title: Text(
-              widget.heading,
-              style: TextStyle(fontSize: 17),
-            ),
-            centerTitle: true,),
+          ),
+          title: Text(
+            widget.heading,
+            style: TextStyle(fontSize: 17),
+          ),
+          centerTitle: true,
+        ),
         body: StreamBuilder(
             stream: Firestore.instance
                 .collection('messages')
                 .document(widget.messagesId)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  !snapshot.hasData) {
                 return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  child: customListLoadingShimmer(context,
+                      loadingMessage: 'Loading your Messages...',
+                      listLength: 6),
                 );
               } else {
                 DocumentSnapshot items = snapshot.data;
