@@ -17,11 +17,7 @@ dependencies:
   wakelock: ^0.1.4+1
   image_picker: ^0.6.7+1
   dash_chat: ^1.1.8
-  camera:
-    git:
-      url: https://github.com/Renesanse/plugins.git
-      path: packages/camera
-      ref: flash_light
+  camera: ^0.5.8+11
   barcode_scan: ^3.0.1
   shared_preferences: ^0.5.8
   firebase_storage: ^3.1.6
