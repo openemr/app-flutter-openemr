@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock/wakelock.dart';
 import 'chart.dart';
@@ -17,14 +17,14 @@ class PPG extends StatefulWidget {
 class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
   bool _toggled = false; // toggle button value
   List<SensorValue> _data = List<SensorValue>(); // array to store the values
-  CameraController _controller;
+  // CameraController _controller;
   double _alpha = 0.3; // factor for the mean value
   AnimationController _animationController;
   double _iconScale = 1;
   int _bpm = 0; // beats per minute
   int _fs = 30; // sampling frequency (fps)
   int _windowLen = 30 * 6; // window length to display - 6 seconds
-  CameraImage _image; // store the last camera image
+  // CameraImage _image; // store the last camera image
   double _avg; // store the average value during calculation
   DateTime _now; // store the now Datetime
   Timer _timer; // timer for image processing
@@ -46,7 +46,7 @@ class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
   void dispose() {
     _timer?.cancel();
     _toggled = false;
-    _disposeController();
+    // _disposeController();
     Wakelock.disable();
     _animationController?.stop();
     _animationController?.dispose();
@@ -95,13 +95,14 @@ class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
                             fit: StackFit.expand,
                             alignment: Alignment.center,
                             children: <Widget>[
-                              _controller != null && _toggled
-                                  ? AspectRatio(
-                                      aspectRatio:
-                                          _controller.value.aspectRatio,
-                                      child: CameraPreview(_controller),
-                                    )
-                                  : Container(
+                              // _controller != null && _toggled
+                              //     ? AspectRatio(
+                              //         aspectRatio:
+                              //             _controller.value.aspectRatio,
+                              //         child: CameraPreview(_controller),
+                              //       )
+                                  // :
+                                   Container(
                                       padding: EdgeInsets.all(12),
                                       alignment: Alignment.center,
                                       color: Colors.grey,
@@ -157,11 +158,11 @@ class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
                     color: Colors.red,
                     iconSize: 128,
                     onPressed: () {
-                      if (_toggled) {
-                        _untoggle();
-                      } else {
-                        _toggle();
-                      }
+                      // if (_toggled) {
+                      //   _untoggle();
+                      // } else {
+                      //   _toggle();
+                      // }
                     },
                   ),
                 ),
@@ -196,73 +197,73 @@ class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
               DateTime.fromMillisecondsSinceEpoch(now - i * 1000 ~/ _fs), 128));
   }
 
-  void _toggle() {
-    _clearData();
-    _initController().then((onValue) {
-      Wakelock.enable();
-      _animationController?.repeat(reverse: true);
-      setState(() {
-        _toggled = true;
-      });
-      // after is toggled
-      _initTimer();
-      _updateBPM();
-    });
-  }
+  // void _toggle() {
+  //   _clearData();
+  //   _initController().then((onValue) {
+  //     Wakelock.enable();
+  //     _animationController?.repeat(reverse: true);
+  //     setState(() {
+  //       _toggled = true;
+  //     });
+  //     // after is toggled
+  //     _initTimer();
+  //     _updateBPM();
+  //   });
+  // }
 
-  void _untoggle() {
-    _disposeController();
-    Wakelock.disable();
-    _animationController?.stop();
-    _animationController?.value = 0.0;
-    setState(() {
-      _toggled = false;
-    });
-  }
+  // void _untoggle() {
+  //   _disposeController();
+  //   Wakelock.disable();
+  //   _animationController?.stop();
+  //   _animationController?.value = 0.0;
+  //   setState(() {
+  //     _toggled = false;
+  //   });
+  // }
 
-  void _disposeController() {
-    _controller?.dispose();
-    _controller = null;
-  }
+  // void _disposeController() {
+  //   _controller?.dispose();
+  //   _controller = null;
+  // }
 
-  Future<void> _initController() async {
-    try {
-      List _cameras = await availableCameras();
-      _controller = CameraController(_cameras.first, ResolutionPreset.low);
-      await _controller.initialize();
-      Future.delayed(Duration(milliseconds: 100)).then((onValue) {
-        _controller.flash(true);
-      });
-      _controller.startImageStream((CameraImage image) {
-        _image = image;
-      });
-    } catch (Exception) {
-      debugPrint(Exception);
-    }
-  }
+  // Future<void> _initController() async {
+  //   try {
+  //     List _cameras = await availableCameras();
+  //     _controller = CameraController(_cameras.first, ResolutionPreset.low);
+  //     await _controller.initialize();
+  //     Future.delayed(Duration(milliseconds: 100)).then((onValue) {
+  //       _controller.flash(true);
+  //     });
+  //     _controller.startImageStream((CameraImage image) {
+  //       _image = image;
+  //     });
+  //   } catch (Exception) {
+  //     debugPrint(Exception);
+  //   }
+  // }
 
-  void _initTimer() {
-    _timer = Timer.periodic(Duration(milliseconds: 1000 ~/ _fs), (timer) {
-      if (_toggled) {
-        if (_image != null) _scanImage(_image);
-      } else {
-        timer.cancel();
-      }
-    });
-  }
+  // void _initTimer() {
+  //   _timer = Timer.periodic(Duration(milliseconds: 1000 ~/ _fs), (timer) {
+  //     if (_toggled) {
+  //       if (_image != null) _scanImage(_image);
+  //     } else {
+  //       timer.cancel();
+  //     }
+  //   });
+  // }
 
-  void _scanImage(CameraImage image) {
-    _now = DateTime.now();
-    _avg =
-        image.planes.first.bytes.reduce((value, element) => value + element) /
-            image.planes.first.bytes.length;
-    if (_data.length >= _windowLen) {
-      _data.removeAt(0);
-    }
-    setState(() {
-      _data.add(SensorValue(_now, _avg));
-    });
-  }
+  // void _scanImage(CameraImage image) {
+  //   _now = DateTime.now();
+  //   _avg =
+  //       image.planes.first.bytes.reduce((value, element) => value + element) /
+  //           image.planes.first.bytes.length;
+  //   if (_data.length >= _windowLen) {
+  //     _data.removeAt(0);
+  //   }
+  //   setState(() {
+  //     _data.add(SensorValue(_now, _avg));
+  //   });
+  // }
 
   void _updateBPM() async {
     // Bear in mind that the method used to calculate the BPM is very rudimentar
