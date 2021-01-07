@@ -24,27 +24,35 @@ class _HomePageState extends State<HomePage> {
   final firebaseFlag = false;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
-    {'icon': CupertinoIcons.heart_solid, 'title': 'PPG', 'route': PPG()},
+    {
+      'icon': CupertinoIcons.heart_solid,
+      'title': 'PPG',
+      'route': PPG(),
+    },
     {
       'icon': Icons.video_call,
       'title': 'Telehealth',
       'authentication': "firebase",
       'failRoute': LoginFirebaseScreen(),
-      'route': Telehealth()
+      'route': Telehealth(),
     },
     {
       'icon': Icons.people,
       'title': 'Patient List',
       'route': PatientListPage(),
       'authentication': "webapp",
-      'failRoute': LoginScreen()
+      'failRoute': LoginScreen(),
     },
     {
       'icon': Icons.translate,
       'title': 'Text Recognition',
-      'route': MedicineRecognitionPage()
+      'route': MedicineRecognitionPage(),
     },
-    {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},
+    {
+      'icon': Icons.scanner,
+      'title': 'Code scanner',
+      'route': CodeScanner(),
+    },
   ];
 
   void _showSnackBar(String text) {
@@ -71,84 +79,98 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Container(
               margin: const EdgeInsets.only(
-                  left: 15, bottom: 20, top: 20, right: 15),
+                left: 15,
+                bottom: 20,
+                top: 20,
+                right: 15,
+              ),
               child: GridView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: const ScrollPhysics(),
-                  itemCount: gfComponents.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20),
-                  itemBuilder: (BuildContext context, int index) =>
-                      buildSquareTile(
-                          gfComponents[index]['title'],
-                          gfComponents[index]['icon'],
-                          gfComponents[index]['route'],
-                          gfComponents[index]['authentication'],
-                          gfComponents[index]['failRoute'])),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                physics: const ScrollPhysics(),
+                itemCount: gfComponents.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20),
+                itemBuilder: (BuildContext context, int index) =>
+                    buildSquareTile(
+                  gfComponents[index]['title'],
+                  gfComponents[index]['icon'],
+                  gfComponents[index]['route'],
+                  gfComponents[index]['authentication'],
+                  gfComponents[index]['failRoute'],
+                ),
+              ),
             ),
           ],
         ),
       );
 
   Widget buildSquareTile(String title, IconData icon, Widget route, String auth,
-          Widget failRoute) =>
+          Widget failRoute,
+          {bool enabled = true}) =>
       InkWell(
-        onTap: () async {
-          if (auth == "webapp") {
-            final prefs = await SharedPreferences.getInstance();
-            var username = prefs.getString('username');
-            var password = prefs.getString('password');
-            var url = prefs.getString('baseUrl');
-            RestDatasource api = new RestDatasource();
-            api.login(username, password, url).then((User user) {
-              prefs.setString('token', user.tokenType + " " + user.accessToken);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => route),
-              );
-            }).catchError((Object error) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => failRoute),
-              );
-            });
-          } else if (auth == "firebase") {
-            if (firebaseFlag) {
-              var user = await _auth.currentUser();
-              if (user != null && user.isEmailVerified) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (BuildContext context) => route),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => failRoute),
-                );
-              }
-            } else {
-              _showSnackBar("Check readme to enable firebase");
-            }
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (BuildContext context) => route),
-            );
-          }
-        },
+        onTap: !enabled
+            ? null
+            : () async {
+                if (auth == "webapp") {
+                  final prefs = await SharedPreferences.getInstance();
+                  var username = prefs.getString('username');
+                  var password = prefs.getString('password');
+                  var url = prefs.getString('baseUrl');
+                  RestDatasource api = new RestDatasource();
+                  api.login(username, password, url).then((User user) {
+                    prefs.setString(
+                        'token', user.tokenType + " " + user.accessToken);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => route),
+                    );
+                  }).catchError((Object error) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => failRoute),
+                    );
+                  });
+                } else if (auth == "firebase") {
+                  if (firebaseFlag) {
+                    var user = await _auth.currentUser();
+                    if (user != null && user.isEmailVerified) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => route),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => failRoute),
+                      );
+                    }
+                  } else {
+                    _showSnackBar("Check readme to enable firebase");
+                  }
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => route),
+                  );
+                }
+              },
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF333333),
+            color: enabled ? Color(0xFF333333) : Colors.grey[500],
             borderRadius: const BorderRadius.all(Radius.circular(7)),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.61),
-                  blurRadius: 6,
-                  spreadRadius: 0),
+                color: Colors.black.withOpacity(0.61),
+                blurRadius: 6,
+                spreadRadius: 0,
+              ),
             ],
           ),
           child: Column(
@@ -156,7 +178,8 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Icon(
                 icon,
-                color: GFColors.SUCCESS,
+                color:
+                    enabled ? GFColors.SUCCESS : Colors.white.withOpacity(0.7),
                 size: 30,
               ),
 //            Icon((icon),),
