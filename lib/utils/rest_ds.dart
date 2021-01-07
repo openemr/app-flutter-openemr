@@ -40,8 +40,24 @@ class RestDatasource {
     });
   }
 
-  Future<dynamic> addPatient(
-      baseUrl, token, title, fname, mname, lname, dob, sex) {
+  Future<dynamic> addPatient({
+    baseUrl,
+    token,
+    title,
+    fname,
+    mname,
+    lname,
+    dob,
+    sex,
+    street,
+    postalcode,
+    city,
+    state,
+    countrycode,
+    phonecontact,
+    race,
+    ethnicity,
+  }) {
     Map<String, String> headers = {"Authorization": token};
     return _netUtil.post(baseUrl + addpatientendpoint, headers: headers, body: {
       "title": title,
@@ -50,14 +66,14 @@ class RestDatasource {
       "lname": lname,
       "DOB": dob,
       "sex": sex,
-      "street": "",
-      "postal_code": "",
-      "city": "",
-      "state": "",
-      "country_code": "",
-      "phone_contact": "",
-      "race": "",
-      "ethnicity": ""
+      "street": street,
+      "postal_code": postalcode,
+      "city": city,
+      "state": state,
+      "country_code": countrycode,
+      "phone_contact": phonecontact,
+      "race": race,
+      "ethnicity": ethnicity,
     }).then((dynamic res) {
       if (res["data"] != null) {
         res = res["data"];
