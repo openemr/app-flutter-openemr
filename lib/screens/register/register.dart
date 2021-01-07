@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:openemr/screens/login/login2.dart';
+import 'package:openemr/utils/customlistloadingshimmer.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,7 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
   final Firestore _store = Firestore.instance;
 
   User user;
+  bool _isLoading = false;
 
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -24,6 +26,12 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
   void _showSnackBar(String text) {
     scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
+  void _toggleLoadingStatus(bool newLoadingState) {
+    setState(() {
+      _isLoading = newLoadingState;
+    });
   }
 
   @override
@@ -59,86 +67,93 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
                       SizedBox(
                         height: 20,
                       ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter your full name';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _name = val,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Full Name'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Username can\'t be blank';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _userid = val,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Username'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter your email';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _email = val,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'E-mail'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter password';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _password = val,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      GFButton(
-                        onPressed: () => handleRegister(context),
-                        text: 'Register',
-                        color: GFColors.DARK,
-                      ),
-                      GFButton(
-                        onPressed: () => handleSignIn(context),
-                        text: 'login',
-                        color: GFColors.DARK,
-                        type: GFButtonType.outline2x,
-                      ),
+                      _isLoading
+                          ? customListLoadingShimmer(context,
+                              loadingMessage: 'Authenticating', listLength: 4)
+                          : Column(
+                              children: [
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Please enter your full name';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _name = val,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Full Name'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Username can\'t be blank';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _userid = val,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Username'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Please enter your email';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _email = val,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'E-mail'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Please enter password';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _password = val,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Password'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                GFButton(
+                                  onPressed: () => handleRegister(context),
+                                  text: 'Register',
+                                  color: GFColors.DARK,
+                                ),
+                                GFButton(
+                                  onPressed: () => handleSignIn(context),
+                                  text: 'login',
+                                  color: GFColors.DARK,
+                                  type: GFButtonType.outline2x,
+                                ),
+                              ],
+                            )
                     ],
                   ),
                 ),
@@ -161,12 +176,14 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
     final form = formKey.currentState;
     if (form.validate()) {
       form.save();
+      _toggleLoadingStatus(true);
       QuerySnapshot ref = await _store
           .collection('username')
           .where("id", isEqualTo: _userid)
           .snapshots()
           .first;
       if (ref.documentChanges.isNotEmpty) {
+        _toggleLoadingStatus(false);
         _showSnackBar("Username already exist");
         return null;
       }
@@ -201,6 +218,7 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
     }
     await user.sendEmailVerification();
     await _auth.signOut();
+    _toggleLoadingStatus(false);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(

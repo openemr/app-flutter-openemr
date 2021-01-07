@@ -3,6 +3,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:openemr/screens/telehealth/chat.dart';
+import 'package:openemr/screens/telehealth/local_widgets/profileShimmer.dart';
 import 'package:openemr/screens/telehealth/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:openemr/screens/telehealth/signaling.dart';
@@ -364,71 +365,74 @@ class _TelehealthState extends State<Telehealth>
                 child: GFTabBarView(
                   controller: tabController,
                   children: <Widget>[
-                    Container(
-                      child: ListView(
-                        children: <Widget>[
-                          GFCard(
-                            boxFit: BoxFit.fill,
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.67),
-                                BlendMode.darken),
-                            image: Image.asset(
-                              'lib/assets/images/image1.png',
-                              width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.fitWidth,
-                            ),
-                            titlePosition: GFPosition.end,
-                            title: GFListTile(
-                              avatar: const GFAvatar(
-                                backgroundImage:
-                                    AssetImage('lib/assets/images/avatar8.png'),
-                              ),
-                              titleText: user != null
-                                  ? user.displayName != null
-                                      ? user.displayName
-                                      : "Use edit icon on left to update"
-                                  : "Invalid User",
-                              icon: GFIconButton(
-                                onPressed: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            FirebaseProfileScreen()),
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: GFColors.DANGER,
+                    user == null
+                        ? profileShimmer(context)
+                        : Container(
+                            child: ListView(
+                              children: <Widget>[
+                                GFCard(
+                                  boxFit: BoxFit.fill,
+                                  colorFilter: ColorFilter.mode(
+                                      Colors.black.withOpacity(0.67),
+                                      BlendMode.darken),
+                                  image: Image.asset(
+                                    'lib/assets/images/image1.png',
+                                    width: MediaQuery.of(context).size.width,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                  titlePosition: GFPosition.end,
+                                  title: GFListTile(
+                                    avatar: const GFAvatar(
+                                      backgroundImage: AssetImage(
+                                          'lib/assets/images/avatar8.png'),
+                                    ),
+                                    titleText: user != null
+                                        ? user.displayName != null
+                                            ? user.displayName
+                                            : "Use edit icon on left to update"
+                                        : "Invalid User",
+                                    icon: GFIconButton(
+                                      onPressed: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  FirebaseProfileScreen()),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.edit,
+                                        color: GFColors.DANGER,
+                                      ),
+                                      type: GFButtonType.transparent,
+                                    ),
+                                  ),
                                 ),
-                                type: GFButtonType.transparent,
-                              ),
+                                GFCard(
+                                  boxFit: BoxFit.fill,
+                                  colorFilter: ColorFilter.mode(
+                                      Colors.black.withOpacity(0.67),
+                                      BlendMode.darken),
+                                  titlePosition: GFPosition.end,
+                                  title: GFListTile(
+                                    titleText: "WebRTC endpoint",
+                                    subtitleText: (serverIP == null ||
+                                            serverIP == "")
+                                        ? "Not Configured\n(Telehealth restarts on IP change)"
+                                        : serverIP,
+                                    icon: GFIconButton(
+                                      onPressed: _updateServerIp,
+                                      icon: Icon(
+                                        Icons.settings,
+                                        color: GFColors.DANGER,
+                                      ),
+                                      type: GFButtonType.transparent,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          GFCard(
-                            boxFit: BoxFit.fill,
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.67),
-                                BlendMode.darken),
-                            titlePosition: GFPosition.end,
-                            title: GFListTile(
-                              titleText: "WebRTC endpoint",
-                              subtitleText: (serverIP == null || serverIP == "")
-                                  ? "Not Configured\n(Telehealth restarts on IP change)"
-                                  : serverIP,
-                              icon: GFIconButton(
-                                onPressed: _updateServerIp,
-                                icon: Icon(
-                                  Icons.settings,
-                                  color: GFColors.DANGER,
-                                ),
-                                type: GFButtonType.transparent,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     ListView.builder(
                       itemCount: activeChats.length,
                       itemBuilder: (context, i) {

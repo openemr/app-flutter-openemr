@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:openemr/screens/register/register.dart';
+import 'package:openemr/utils/customlistloadingshimmer.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -18,6 +19,7 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User user;
+  bool _isLoading = false;
 
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -36,6 +38,12 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
   void _showSnackBar(String text) {
     scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
+  void _toggleLoadingStatus(bool newLoadingState) {
+    setState(() {
+      _isLoading = newLoadingState;
+    });
   }
 
   @override
@@ -71,52 +79,59 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
                       SizedBox(
                         height: 20,
                       ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter your email';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _email = val,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'E-mail'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Please enter password';
-                            }
-                            return null;
-                          },
-                          onSaved: (val) => _password = val,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password'),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      GFButton(
-                        onPressed: () => handleSignIn(context),
-                        text: 'login',
-                        color: GFColors.DARK,
-                      ),
-                      GFButton(
-                        onPressed: () => handleRegister(context),
-                        text: 'Register',
-                        color: GFColors.DARK,
-                        type: GFButtonType.outline2x,
-                      ),
+                      _isLoading
+                          ? customListLoadingShimmer(context,
+                              loadingMessage: 'Authenticating', listLength: 2)
+                          : Column(
+                              children: [
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Please enter your email';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _email = val,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'E-mail'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return 'Please enter password';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (val) => _password = val,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Password'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                GFButton(
+                                  onPressed: () => handleSignIn(context),
+                                  text: 'login',
+                                  color: GFColors.DARK,
+                                ),
+                                GFButton(
+                                  onPressed: () => handleRegister(context),
+                                  text: 'Register',
+                                  color: GFColors.DARK,
+                                  type: GFButtonType.outline2x,
+                                ),
+                              ],
+                            )
                     ],
                   ),
                 ),
@@ -129,6 +144,7 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
   void handleSignIn(context) async {
     FirebaseUser user;
     final form = formKey.currentState;
+    _toggleLoadingStatus(true);
     if (form.validate()) {
       form.save();
       try {
