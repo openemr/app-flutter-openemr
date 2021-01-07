@@ -231,7 +231,7 @@ class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
       _controller = CameraController(_cameras.first, ResolutionPreset.low);
       await _controller.initialize();
       Future.delayed(Duration(milliseconds: 100)).then((onValue) {
-        _controller.flash(true);
+        _controller.setFlashMode(FlashMode.torch);
       });
       _controller.startImageStream((CameraImage image) {
         _image = image;
