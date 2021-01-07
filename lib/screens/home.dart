@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
                   gfComponents[index]['route'],
                   gfComponents[index]['authentication'],
                   gfComponents[index]['failRoute'],
+                  gfComponents[index]['disabled'] ?? false,
                 ),
               ),
             ),
@@ -107,13 +108,17 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  Widget buildSquareTile(String title, IconData icon, Widget route, String auth,
-          Widget failRoute,
-          {bool enabled = true}) =>
+  Widget buildSquareTile(
+    String title,
+    IconData icon,
+    Widget route,
+    String auth,
+    Widget failRoute,
+    bool disabled,
+  ) =>
       InkWell(
-        onTap: !enabled
-            ? null
-            : () async {
+        onTap: !disabled
+            ? () async {
                 if (auth == "webapp") {
                   final prefs = await SharedPreferences.getInstance();
                   var username = prefs.getString('username');
@@ -160,10 +165,11 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (BuildContext context) => route),
                   );
                 }
-              },
+              }
+            : null,
         child: Container(
           decoration: BoxDecoration(
-            color: enabled ? Color(0xFF333333) : Colors.grey[500],
+            color: !disabled ? Color(0xFF333333) : Colors.grey[500],
             borderRadius: const BorderRadius.all(Radius.circular(7)),
             boxShadow: [
               BoxShadow(
@@ -178,8 +184,9 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               Icon(
                 icon,
-                color:
-                    enabled ? GFColors.SUCCESS : Colors.white.withOpacity(0.7),
+                color: !disabled
+                    ? GFColors.SUCCESS
+                    : Colors.white.withOpacity(0.7),
                 size: 30,
               ),
 //            Icon((icon),),
