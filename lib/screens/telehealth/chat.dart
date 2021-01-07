@@ -1,17 +1,15 @@
 import 'dart:async';
-// import 'dart:collection';
-// import 'dart:io';
-// import 'dart:math';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:dash_chat/dash_chat.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:openemr/utils/customlistloadingshimmer.dart';
 
 class ChatScreen extends StatefulWidget {
   final String messagesId;
@@ -19,7 +17,6 @@ class ChatScreen extends StatefulWidget {
   final String heading;
   final String userId;
   final String userName;
-
 
   ChatScreen(
       {Key key,
@@ -38,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
   final Firestore _store = Firestore.instance;
   ChatUser chatUser;
+  final picker = ImagePicker();
 
   List<ChatMessage> messages = List<ChatMessage>();
   var m = List<ChatMessage>();
@@ -89,75 +87,56 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void uploadImage(result) async {
-    // final StorageReference storageRef =
-    //     FirebaseStorage.instance.ref().child("chat_images");
+    final StorageReference storageRef = FirebaseStorage.instance
+        .ref()
+        .child(widget.userId + "-" + DateTime.now().toString());
 
-    // StorageUploadTask uploadTask = storageRef.putFile(
-    //   result,
-    //   StorageMetadata(
-    //     contentType: 'image/jpg',
-    //   ),
-    // );
-    // StorageTaskSnapshot download = await uploadTask.onComplete;
+    StorageUploadTask uploadTask = storageRef.putFile(
+      result,
+      StorageMetadata(
+        contentType: 'image/jpg',
+      ),
+    );
+    StorageTaskSnapshot download = await uploadTask.onComplete;
 
-    // String url = await download.ref.getDownloadURL();
+    String url = await download.ref.getDownloadURL();
 
-    // ChatMessage message = ChatMessage(text: "", user: user, image: url);
-
-    // var documentReference = Firestore.instance
-    //     .collection('messages')
-    //     .document(DateTime.now().millisecondsSinceEpoch.toString());
-
-    // Firestore.instance.runTransaction((transaction) async {
-    //   await transaction.set(
-    //     documentReference,
-    //     message.toJson(),
-    //   );
-    // });
+    ChatMessage message = ChatMessage(text: "", user: chatUser, image: url);
+    onSend(message);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: GFColors.DARK,
-            leading: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(
-                CupertinoIcons.back,
-                color: GFColors.SUCCESS,
-              ),
+          backgroundColor: GFColors.DARK,
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              CupertinoIcons.back,
+              color: GFColors.SUCCESS,
             ),
-            title: Text(
-              widget.heading,
-              style: TextStyle(fontSize: 17),
-            ),
-            centerTitle: true,
-            actions: <Widget>[
-              GFIconButton(
-                icon: Icon(
-                  Icons.call,
-                  color: Colors.blue,
-                ),
-                onPressed: () {},
-                type: GFButtonType.transparent,
-              ),
-            ]),
+          ),
+          title: Text(
+            widget.heading,
+            style: TextStyle(fontSize: 17),
+          ),
+          centerTitle: true,
+        ),
         body: StreamBuilder(
             stream: Firestore.instance
                 .collection('messages')
                 .document(widget.messagesId)
                 .snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  !snapshot.hasData) {
                 return Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  child: customListLoadingShimmer(context,
+                      loadingMessage: 'Loading your Messages...',
+                      listLength: 6),
                 );
               } else {
                 DocumentSnapshot items = snapshot.data;
@@ -201,38 +180,40 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                   shouldShowLoadEarlier: false,
                   showTraillingBeforeSend: true,
-                  // trailing: <Widget>[
-                  //   IconButton(
-                  //     icon: Icon(Icons.camera_alt),
-                  //     onPressed: () async {
-                  //       File result = await ImagePicker.pickImage(
-                  //         source: ImageSource.camera,
-                  //         imageQuality: 80,
-                  //         maxHeight: 400,
-                  //         maxWidth: 400,
-                  //       );
+                  trailing: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      onPressed: () async {
+                        final pickedFile = await picker.getImage(
+                          source: ImageSource.camera,
+                          imageQuality: 80,
+                          maxHeight: 400,
+                          maxWidth: 400,
+                        );
 
-                  //       if (result != null) {
-                  //         uploadImage(result);
-                  //       }
-                  //     },
-                  //   ),
-                  //   IconButton(
-                  //     icon: Icon(Icons.photo),
-                  //     onPressed: () async {
-                  //       File result = await ImagePicker.pickImage(
-                  //         source: ImageSource.gallery,
-                  //         imageQuality: 80,
-                  //         maxHeight: 400,
-                  //         maxWidth: 400,
-                  //       );
+                        if (pickedFile != null) {
+                          File result = File(pickedFile.path);
+                          uploadImage(result);
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.photo),
+                      onPressed: () async {
+                           final pickedFile = await picker.getImage(
+                          source: ImageSource.gallery,
+                          imageQuality: 80,
+                          maxHeight: 400,
+                          maxWidth: 400,
+                        );
 
-                  //       if (result != null) {
-                  //         uploadImage(result);
-                  //       }
-                  //     },
-                  //   ),
-                  // ],
+                        if (pickedFile != null) {
+                          File result = File(pickedFile.path);
+                          uploadImage(result);
+                        }
+                      },
+                    ),
+                  ],
                 );
               }
             }));

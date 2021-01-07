@@ -11,7 +11,6 @@ import 'package:openemr/screens/telehealth/telehealth.dart';
 import 'package:openemr/utils/rest_ds.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/drawer/drawer.dart';
-// import '../screens/shimmer/shimmer.dart';
 import 'login/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -41,8 +40,8 @@ class _HomePageState extends State<HomePage> {
       'failRoute': LoginScreen()
     },
     {
-      'icon': Icons.info,
-      'title': 'Medicine',
+      'icon': Icons.translate,
+      'title': 'Text Recognition',
       'route': MedicineRecognitionPage()
     },
     {'icon': Icons.scanner, 'title': 'Code scanner', 'route': CodeScanner()},
@@ -119,7 +118,7 @@ class _HomePageState extends State<HomePage> {
           } else if (auth == "firebase") {
             if (firebaseFlag) {
               var user = await _auth.currentUser();
-              if (user != null) {
+              if (user != null && user.isEmailVerified) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => route),

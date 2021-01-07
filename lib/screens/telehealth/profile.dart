@@ -104,7 +104,9 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
             errorMessage = "Account not found";
             break;
           default:
-            errorMessage = "An undefined Error happened.";
+            errorMessage = error.code == null
+                ? "An undefined Error happened."
+                : error.code;
         }
       }
     }

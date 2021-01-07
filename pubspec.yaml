@@ -1,10 +1,10 @@
 name: openemr
 description: A new Flutter project.
 
-version: 2.0.0+2
+version: 2.1.1+4
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: '>=2.3.0 <3.0.0'
 
 dependencies:
   json_store: ^1.1.0
@@ -17,16 +17,13 @@ dependencies:
   wakelock: ^0.1.4+1
   image_picker: ^0.6.7+1
   dash_chat: ^1.1.8
-  camera:
-    git:
-      url: https://github.com/Renesanse/plugins.git
-      path: packages/camera
-      ref: flash_light
+  camera: ^0.6.4+3
   barcode_scan: ^3.0.1
   shared_preferences: ^0.5.8
   firebase_storage: ^3.1.6
   cloud_firestore: ^0.13.7
   firebase_auth: ^0.16.1
+  flutter_webrtc: ^0.2.8
 
 dev_dependencies:
   flutter_test:

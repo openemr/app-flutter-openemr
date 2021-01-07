@@ -79,31 +79,6 @@ class _DrawerPageState extends State<DrawerPage> {
               color: Colors.white,
               child: Column(
                 children: <Widget>[
-                  const Padding(
-                    padding: EdgeInsets.only(left: 2),
-                    child: GFListTile(
-                      avatar: Icon(
-                        Icons.error,
-                        color: GFColors.DANGER,
-                      ),
-                      title: Text('Webapp Connection',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.black87)),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 2),
-                    child: GFListTile(
-                      avatar: Icon(
-                        Icons.error,
-                        color: GFColors.DANGER,
-                      ),
-                      title: Text('Firebase Connection',
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.black87)),
-                    ),
-                  ),
-                  Divider(color: GFColors.FOCUS, indent: 20, endIndent: 30),
                   InkWell(
                     onTap: () {
                       Navigator.push(
@@ -148,11 +123,11 @@ class _DrawerPageState extends State<DrawerPage> {
                   Divider(color: GFColors.FOCUS, indent: 20, endIndent: 30),
                   const Padding(
                     padding: EdgeInsets.only(left: 2),
-                    child: Text("Last update: 08/12/20"),
+                    child: Text("Last update: 08/22/20"),
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 2),
-                    child: Text("v2.0"),
+                    child: Text("v2.1.1"),
                   ),
                 ],
               ),

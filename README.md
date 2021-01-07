@@ -1,10 +1,17 @@
-# OpenEMR
+# OpenEMRv2.1.1
 
 [OpenEMR](https://open-emr.org) is the most popular open source electronic health records and medical practice management solution. [ONC certified](https://open-emr.org/wiki/index.php/OpenEMR_Wiki_Home_Page#ONC_Ambulatory_EHR_Certification) with international usage, OpenEMR's goal is a superior alternative to its proprietary counterparts.
 
+## What's New?
+- Warnings has been removed
+- Improved toast error message for firebase
+- `google-services.json` has been added to `.gitignore`
+
 ## Version Info
-`2.0` -> Current Version  
-`2.1` -> Image sharing and Video calling in chat  
+`2.1.1` -> Current Version  
+`2.1.2` -> Add Loading screens (Completed)  
+`2.1.3` -> Remove deprecated function (Completed)   
+`2.1.4` -> Error message based on API response (In Progress)  
 `2.2` -> Medicine recognition  
 .  
 .  
@@ -27,6 +34,10 @@ To run openemr in a device
 flutter pub get
 flutter run
 ```
+### How to use calling feature
+1. Run the [app-golang-openemr](https://github.com/openemr/app-golang-openemr/tree/c6930bb8f84e572234daaa071add316334a247f5)
+2. Enter the server ip address in the prompt  
+   ![](./img/ip.gif)
 
 ### How to Setup Firebase
 
