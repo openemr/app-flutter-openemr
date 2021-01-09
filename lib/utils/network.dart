@@ -37,13 +37,21 @@ class NetworkUtil {
         .post(url,
             body: json.encode(body), headers: headers, encoding: encoding)
         .then((http.Response response) {
-      final String res = response.body;
+      final res = response.body;
       final int statusCode = response.statusCode;
       if (statusCode == 401) {
         throw new Exception(statusCode.toString() + "Invalid Credentials");
+      } else if (statusCode == 400) {
+        final resData = json.decode(res);
+        var validationErrorData = resData['validationErrors'];
+        List<Map<String, dynamic>> errors = [];
+        validationErrorData.entries.forEach(((err) => errors.add(err.value)));
+        if (errors.isNotEmpty) {
+          throw Exception(
+              statusCode.toString() + " " + errors[0].values.toString());
+        }
       } else if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception(
-            statusCode.toString() + "Error while fetching data");
+        throw Exception(statusCode.toString() + "Error while fetching data");
       }
       return _decoder.convert(res);
     });

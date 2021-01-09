@@ -143,7 +143,6 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
 
   void handleSignIn(context) async {
     FirebaseUser user;
-    String errorMessage;
     final form = formKey.currentState;
     _toggleLoadingStatus(true);
     if (form.validate()) {
@@ -153,42 +152,21 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
             email: _email, password: _password);
         user = result.user;
       } catch (error) {
-        switch (error.code) {
-          case "ERROR_INVALID_EMAIL":
-            errorMessage = "Your email address appears to be malformed.";
-            break;
-          case "ERROR_WRONG_PASSWORD":
-            errorMessage = "Your password is wrong.";
-            break;
-          case "ERROR_USER_NOT_FOUND":
-            errorMessage = "User with this email doesn't exist.";
-            break;
-          case "ERROR_USER_DISABLED":
-            errorMessage = "User with this email has been disabled.";
-            break;
-          case "ERROR_TOO_MANY_REQUESTS":
-            errorMessage = "Too many requests. Try again later.";
-            break;
-          case "ERROR_OPERATION_NOT_ALLOWED":
-            errorMessage = "Signing in with Email and Password is not enabled.";
-            break;
-          default:
-            errorMessage = error.code == null
-                ? "An undefined Error happened."
-                : error.code;
+        if (error.message != null) {
+          _showSnackBar(error.message);
+        } else {
+          _showSnackBar('An unexpected error occured!');
         }
+        _toggleLoadingStatus(false);
+        return null;
       }
     }
     _toggleLoadingStatus(false);
-    if (errorMessage != null) {
-      _showSnackBar(errorMessage);
+    if (!user.isEmailVerified) {
+      _showSnackBar("Email not verified");
+      await _auth.signOut();
     } else {
-      if (!user.isEmailVerified) {
-        _showSnackBar("Email not verified");
-        await _auth.signOut();
-      } else {
-        Navigator.pop(context);
-      }
+      Navigator.pop(context);
     }
   }
 
