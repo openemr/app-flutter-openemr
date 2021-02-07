@@ -193,6 +193,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 title,
                 style: const TextStyle(color: GFColors.WHITE, fontSize: 20),
+                textAlign: TextAlign.center
               )
             ],
           ),
