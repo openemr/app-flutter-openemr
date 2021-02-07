@@ -190,17 +190,14 @@ class _HomePageState extends State<HomePage> {
                 size: 30,
               ),
 //            Icon((icon),),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    color: GFColors.WHITE,
-                    fontSize: 20,
-                  ),
-                  textAlign: TextAlign.center,
+              Text(
+                title,
+                style: const TextStyle(
+                  color: GFColors.WHITE,
+                  fontSize: 20,
                 ),
-              )
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
