@@ -21,7 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final firebaseFlag = false;
+  final firebaseFlag = true;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {
@@ -190,9 +190,16 @@ class _HomePageState extends State<HomePage> {
                 size: 30,
               ),
 //            Icon((icon),),
-              Text(
-                title,
-                style: const TextStyle(color: GFColors.WHITE, fontSize: 20),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: GFColors.WHITE,
+                    fontSize: 20,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               )
             ],
           ),
