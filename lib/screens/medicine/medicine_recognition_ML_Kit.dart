@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/colors/gf_color.dart';
@@ -17,32 +18,54 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   File image;
   ImagePicker imagePicker;
 
-  void captureFromCamera() async {
+  captureFromCamera() async {
     try {
       PickedFile pickedFile =
           await imagePicker.getImage(source: ImageSource.camera);
       File imageNew = File(pickedFile.path);
       setState(() {
         image = imageNew;
-        // labelImage();
+        convertImageToText();
       });
     } on Exception catch (e) {
       print(e);
     }
   }
 
-  void chooseFromGalery() async {
+  chooseFromGalery() async {
     try {
       PickedFile pickedFile =
           await imagePicker.getImage(source: ImageSource.gallery);
       File imageNew = File(pickedFile.path);
       setState(() {
         image = imageNew;
-        // labelImage();
+        convertImageToText();
       });
     } on Exception catch (e) {
       print(e);
     }
+  }
+
+  convertImageToText() async {
+    final FirebaseVisionImage firebaseVisionImage =
+        FirebaseVisionImage.fromFile(image);
+    final TextRecognizer textRecognizer =
+        FirebaseVision.instance.textRecognizer();
+    VisionText visionText =
+        await textRecognizer.processImage(firebaseVisionImage);
+    _result = "";
+
+    setState(() {
+      for (TextBlock textBlock in visionText.blocks) {
+        final String text = textBlock.text;
+
+        for (TextLine textLine in textBlock.lines) {
+          for (TextElement textElement in textLine.elements) {
+            _result += textElement.text + " ";
+          }
+        }
+      }
+    });
   }
 
   @override
