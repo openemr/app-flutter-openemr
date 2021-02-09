@@ -69,6 +69,13 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    imagePicker = ImagePicker();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: GFAppBar(
@@ -90,13 +97,16 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           centerTitle: true,
         ),
         body: Center(
-          child: (_result == null || _result == "")
-              ? Icon(
-                  Icons.search,
-                  size: 150,
-                  color: Colors.grey.withOpacity(0.44),
-                )
-              : Text(_result),
+          child: Padding(
+            padding: EdgeInsets.all(40.0),
+            child: (image == null)
+                ? Icon(
+                    Icons.search,
+                    size: 150,
+                    color: Colors.grey.withOpacity(0.44),
+                  )
+                : Text(_result),
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(

@@ -9,8 +9,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         // Uncomment the line if you want to use firebase
-        // classpath 'com.google.gms:google-services:4.3.3'
-        api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
+        classpath 'com.google.gms:google-services:4.3.3'
     }
 }
 
