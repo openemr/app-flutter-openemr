@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   charts_flutter: ^0.9.0
   wakelock: ^0.1.4+1
-  image_picker: ^0.6.7+1
+  image_picker: ^0.6.7+22
   dash_chat: ^1.1.8
   camera: ^0.6.4+3
   barcode_scan: ^3.0.1
@@ -25,7 +25,7 @@ dependencies:
   firebase_auth: ^0.16.1
   flutter_webrtc: ^0.2.8
   firebase_ml_vision: ^0.9.6+2
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
