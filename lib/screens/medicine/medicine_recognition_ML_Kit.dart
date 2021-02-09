@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/appbar/gf_appbar.dart';
+import 'package:image_picker/image_picker.dart';
 
 class MedicineRecognitionMLKit extends StatefulWidget {
   @override
@@ -11,9 +14,37 @@ class MedicineRecognitionMLKit extends StatefulWidget {
 
 class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   String _result = "";
-  void captureFromCamera() {}
+  File image;
+  ImagePicker imagePicker;
 
-  void chooseFromGalery() {}
+  void captureFromCamera() async {
+    try {
+      PickedFile pickedFile =
+          await imagePicker.getImage(source: ImageSource.camera);
+      File imageNew = File(pickedFile.path);
+      setState(() {
+        image = imageNew;
+        // labelImage();
+      });
+    } on Exception catch (e) {
+      print(e);
+    }
+  }
+
+  void chooseFromGalery() async {
+    try {
+      PickedFile pickedFile =
+          await imagePicker.getImage(source: ImageSource.gallery);
+      File imageNew = File(pickedFile.path);
+      setState(() {
+        image = imageNew;
+        // labelImage();
+      });
+    } on Exception catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
