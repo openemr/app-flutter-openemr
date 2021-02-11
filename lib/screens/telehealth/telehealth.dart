@@ -397,7 +397,14 @@ class _TelehealthState extends State<Telehealth>
                                           context,
                                           MaterialPageRoute(
                                               builder: (BuildContext context) =>
-                                                  FirebaseProfileScreen()),
+                                                  //pass current user display name
+                                                  FirebaseProfileScreen(
+                                                      dispName: user != null
+                                                          ? user.displayName !=
+                                                                  null
+                                                              ? user.displayName
+                                                              : ""
+                                                          : "")),
                                         );
                                       },
                                       icon: Icon(

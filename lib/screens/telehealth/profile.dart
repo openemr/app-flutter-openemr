@@ -7,6 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseProfileScreen extends StatefulWidget {
+  //user's current display name
+  final String dispName;
+  FirebaseProfileScreen({Key key, @required this.dispName}) : super(key: key);
   @override
   _FirebaseProfileScreenState createState() => _FirebaseProfileScreenState();
 }
@@ -56,6 +59,8 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
                       ),
                       SizedBox(
                         child: TextFormField(
+                          //set initial value as the dispName
+                          initialValue: widget.dispName,
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Display name can\'t be blank';
@@ -119,7 +124,8 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         .collection('username')
         .document(user.uid)
         .updateData({"name": _name});
-    Navigator.of(context)
-        .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Telehealth()),(route)=>false);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Telehealth()),
+        (route) => false);
   }
 }
