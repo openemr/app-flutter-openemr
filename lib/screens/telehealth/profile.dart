@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:openemr/screens/telehealth/telehealth.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +24,9 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _name;
 
+  //decides when to active/inactive spinner indicator
+  bool showSpinner = false;
+
   void _showSnackBar(String text) {
     scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
@@ -39,9 +43,12 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         }
       },
       child: Scaffold(
-          key: scaffoldKey,
-          backgroundColor: GFColors.LIGHT,
-          body: Padding(
+        key: scaffoldKey,
+        backgroundColor: GFColors.LIGHT,
+        body: ModalProgressHUD(
+          // color: Colors.blueAccent,
+          inAsyncCall: showSpinner,
+          child: Padding(
             padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
             child: Center(
               child: SingleChildScrollView(
@@ -86,11 +93,17 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
                 ),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
   void updateProfile(context) async {
+    //start showing the spinner
+    setState(() {
+      showSpinner = true;
+    });
     FirebaseUser user;
     String errorMessage;
     final form = formKey.currentState;
@@ -102,6 +115,10 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         updateInfo.displayName = _name;
         await user.updateProfile(updateInfo);
       } catch (error) {
+        //stop showing the spinner
+        setState(() {
+          showSpinner = false;
+        });
         switch (error.code) {
           case "ERROR_USER_DISABLED":
             errorMessage = "Your acount has been disabled";
@@ -117,6 +134,10 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
       }
     }
     if (errorMessage != null) {
+      //stop showing the spinner
+      setState(() {
+        showSpinner = false;
+      });
       _showSnackBar(errorMessage);
       return null;
     }
@@ -127,5 +148,9 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
     Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => Telehealth()),
         (route) => false);
+    //stop showing the spinner
+    setState(() {
+      showSpinner = false;
+    });
   }
 }
