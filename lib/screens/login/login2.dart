@@ -130,6 +130,17 @@ class _LoginFirebaseScreenState extends State<LoginFirebaseScreen> {
                                   color: GFColors.DARK,
                                   type: GFButtonType.outline2x,
                                 ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 15, bottom: 15),
+                                  child: Text(
+                                    "Or",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ],
                             )
                     ],
