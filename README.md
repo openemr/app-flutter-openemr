@@ -59,13 +59,14 @@ flutter run
    ![](./img/5.png)
 2. Enter a `com.example.openemr` as package name. You can checkout this post if you want to [use custom package name](https://medium.com/@skyblazar.cc/how-to-change-the-package-name-of-your-flutter-app-4529e6e6e6fc)  
    ![](./img/6.png)
-3. Click on `register app` button
-4. Click on `Download google-services.json`. A json file will be downloaded to your desktop.  
+3. Enter the `SHA-1 hash`. [You can get the SHA-1 using this link](https://developers.google.com/android/guides/client-auth)
+4. Click on `register app` button
+5. Click on `Download google-services.json`. A json file will be downloaded to your desktop.  
    ![](./img/7.png)
-5. Click on `next` button then again click on `next` button followed by `skip this step` button.
-6. Place the `google-services.json` in `android/app` directory.
-7. Go to `android/build.gradle` and uncomment `line 12`
-8. Go to `android/app/build.gradle` and uncomment `line 26 & 65`
+6. Click on `next` button then again click on `next` button followed by `skip this step` button.
+7. Place the `google-services.json` in `android/app` directory.
+8. Go to `android/build.gradle` and uncomment `line 12`
+9. Go to `android/app/build.gradle` and uncomment `line 26 & 65`
 
 #### IOS - Connection
 
@@ -75,6 +76,7 @@ Coming soon
 
 1. Authentication(Used for login/register)  
    ![](./img/auth.gif)
+   ![](./img/google_auth.gif)
 2. Database(Used to store messages)  
    ![](./img/database.gif)
 3. Firestore(Used to store images shared in chat)  
