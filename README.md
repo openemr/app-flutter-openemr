@@ -75,7 +75,9 @@ Coming soon
 #### Enable Firebase services
 
 1. Authentication(Used for login/register)  
+   - Enable Email / Password
    ![](./img/auth.gif)
+   - Enable Google   
    ![](./img/google_auth.gif)
 2. Database(Used to store messages)  
    ![](./img/database.gif)
