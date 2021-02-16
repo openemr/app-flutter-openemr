@@ -158,29 +158,15 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
                                   color: GFColors.DARK,
                                   type: GFButtonType.outline2x,
                                 ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 15, bottom: 15),
-                                  child: Text(
-                                    "Or",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                SizedBox(
+                                  height: 25,
                                 ),
                                 GoogleSignInButton(
                                   onPressed: () {
                                     _toggleLoadingStatus(true);
                                     signInWithGoogle();
                                   },
-                                  text: "Use Google Account",
-                                  textStyle: TextStyle(
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white,
-                                  ),
-                                  darkMode: true, // default: false
+                                  darkMode: false,
                                 ),
                                 SizedBox(
                                   height: 25,

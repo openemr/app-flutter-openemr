@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final userRef = Firestore.instance.collection('username');
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final firebaseFlag = false;
+  final firebaseFlag = true;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {
