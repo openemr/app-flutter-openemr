@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:openemr/screens/login/create_account.dart';
 import 'package:openemr/screens/login/login2.dart';
+import 'package:openemr/screens/telehealth/telehealth.dart';
 import 'package:openemr/utils/customlistloadingshimmer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +20,8 @@ class RegisterFirebaseScreen extends StatefulWidget {
 class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _store = Firestore.instance;
-
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final userRef = Firestore.instance.collection('username');
   User user;
   bool _isLoading = false;
 
@@ -152,6 +158,31 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
                                   color: GFColors.DARK,
                                   type: GFButtonType.outline2x,
                                 ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 25, bottom: 25),
+                                  child: Text(
+                                    "-------OR--------",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.grey),
+                                  ),
+                                ),
+                                GoogleSignInButton(
+                                  onPressed: () {
+                                    _toggleLoadingStatus(true);
+                                    signInWithGoogle();
+                                  },
+                                  textStyle: TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white,
+                                  ),
+                                  darkMode: true,
+                                ),
+                                SizedBox(
+                                  height: 25,
+                                ),
                               ],
                             )
                     ],
@@ -228,5 +259,71 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
                 'A verification link has been sent to your e-mail account'),
       ),
     );
+  }
+
+  Future<void> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    handleGSignIn(googleSignInAccount);
+  }
+
+  handleGSignIn(GoogleSignInAccount googleSignInAccount) async {
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final AuthResult authResult =
+          await _auth.signInWithCredential(credential);
+      final FirebaseUser user = authResult.user;
+
+      try {
+        await createUserInFirestore(user);
+      } catch (err) {
+        _showSnackBar(err);
+        _toggleLoadingStatus(false);
+        _signOut();
+      }
+
+      shredprefUser(user.uid);
+
+      _toggleLoadingStatus(false);
+    } else {
+      _showSnackBar('Please try again');
+      _toggleLoadingStatus(false);
+    }
+  }
+
+  Future<void> shredprefUser(String uid) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('loggedUserId', uid);
+  }
+
+  createUserInFirestore(FirebaseUser user) async {
+    DocumentSnapshot documentSnapshot = await userRef.document(user.uid).get();
+    //go to createAccount page - only for first reigstration
+    if (!documentSnapshot.exists) {
+      _toggleLoadingStatus(false);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => CreateAccount(
+                dispUser: user,
+              )));
+    } else {
+      _toggleLoadingStatus(false);
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => Telehealth()));
+    }
+  }
+
+  Future<void> _signOut() async {
+    await googleSignIn.signOut();
+    await _auth.signOut();
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('loggedUserId');
+    _toggleLoadingStatus(false);
   }
 }
