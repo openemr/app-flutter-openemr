@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:getwidget/getwidget.dart';
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final userRef = Firestore.instance.collection('username');
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final firebaseFlag = false;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -143,12 +145,32 @@ class _HomePageState extends State<HomePage> {
                 } else if (auth == "firebase") {
                   if (firebaseFlag) {
                     var user = await _auth.currentUser();
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var loggedUserId = prefs.getString('loggedUserId');
+
                     if (user != null && user.isEmailVerified) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (BuildContext context) => route),
                       );
+                    } else if (user != null && loggedUserId != null) {
+                      DocumentSnapshot documentSnapshot =
+                          await userRef.document(loggedUserId).get();
+                      if (documentSnapshot.exists) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => route),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => failRoute),
+                        );
+                      }
                     } else {
                       Navigator.push(
                         context,
@@ -190,11 +212,9 @@ class _HomePageState extends State<HomePage> {
                 size: 30,
               ),
 //            Icon((icon),),
-              Text(
-                title,
-                style: const TextStyle(color: GFColors.WHITE, fontSize: 20),
-                textAlign: TextAlign.center
-              )
+              Text(title,
+                  style: const TextStyle(color: GFColors.WHITE, fontSize: 20),
+                  textAlign: TextAlign.center)
             ],
           ),
         ),
