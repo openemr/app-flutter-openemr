@@ -57,7 +57,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
 
     setState(() {
       for (TextBlock textBlock in visionText.blocks) {
-        final String text = textBlock.text;
+        // final String text = textBlock.text;
 
         for (TextLine textLine in textBlock.lines) {
           for (TextElement textElement in textLine.elements) {
