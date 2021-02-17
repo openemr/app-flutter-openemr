@@ -24,6 +24,9 @@ dependencies:
   cloud_firestore: ^0.13.7
   firebase_auth: ^0.16.1
   flutter_webrtc: ^0.2.8
+  google_sign_in: ^4.4.0
+  flutter_auth_buttons: ^0.8.0
+  modal_progress_hud: ^0.1.3
   
 dev_dependencies:
   flutter_test:
