@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:openemr/screens/telehealth/chat.dart';
 import 'package:openemr/screens/telehealth/local_widgets/profileShimmer.dart';
 import 'package:openemr/screens/telehealth/profile.dart';
@@ -33,6 +34,8 @@ class _TelehealthState extends State<Telehealth>
   TabController tabController;
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   void _showSnackBar(String text) {
     scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
@@ -49,7 +52,14 @@ class _TelehealthState extends State<Telehealth>
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
   }
+  Future<void> _signOut() async {
+    await googleSignIn.signOut();
+    await _auth.signOut();
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('loggedUserId');
+
+  }
   @override
   deactivate() {
     super.deactivate();
@@ -304,7 +314,7 @@ class _TelehealthState extends State<Telehealth>
               tooltip: "Logout",
               color: GFColors.DANGER,
               onPressed: () async {
-                await _auth.signOut();
+                _signOut();
                 Navigator.pushNamedAndRemoveUntil(context, '/', (_) => false);
               },
             ),
