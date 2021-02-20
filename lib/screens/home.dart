@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'icon': Icons.translate,
-      'title': 'Text Recognition',
+      'title': 'Medicine Recognition',
       'route': MedicineRecognitionMLKit(),
     },
     {

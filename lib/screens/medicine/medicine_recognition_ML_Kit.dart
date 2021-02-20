@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,11 +16,47 @@ class MedicineRecognitionMLKit extends StatefulWidget {
 }
 
 class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
-  String _result = "";
+  var _imageText = [];
+  var _drugList = [];
   File image;
   ImagePicker imagePicker;
 
+  String baseURL = "https://dailymed.nlm.nih.gov/dailymed/services";
+  String version = "v2";
+  String endpoint = "drugnames";
+  String format = "json";
+  String parameter_1 = "drug_name";
+
+  _callAPI(String drugName) async {
+    try {
+      final response = await http
+          .get('$baseURL/$version/$endpoint\.$format?$parameter_1=$drugName');
+      print(response);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          int drugCount = data["metadata"]["total_elements"];
+          if (drugCount > 0) {
+            setState(() {
+              _drugList.add(drugName);
+            });
+          }
+        }
+      }
+    } on Exception catch (e) {
+      setState(() {
+        _drugList.clear();
+        _drugList.add("No data available");
+      });
+    }
+  }
+
   captureFromCamera() async {
+    setState(() {
+      image = null;
+      _imageText.clear();
+      _drugList.clear();
+    });
     try {
       PickedFile pickedFile =
           await imagePicker.getImage(source: ImageSource.camera);
@@ -28,11 +66,17 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
         convertImageToText();
       });
     } on Exception catch (e) {
+      //print e to snackbar
       print(e);
     }
   }
 
   chooseFromGalery() async {
+    setState(() {
+      image = null;
+      _imageText.clear();
+      _drugList.clear();
+    });
     try {
       PickedFile pickedFile =
           await imagePicker.getImage(source: ImageSource.gallery);
@@ -53,17 +97,21 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
         FirebaseVision.instance.textRecognizer();
     VisionText visionText =
         await textRecognizer.processImage(firebaseVisionImage);
-    _result = "";
 
     setState(() {
       for (TextBlock textBlock in visionText.blocks) {
-        // final String text = textBlock.text;
-
         for (TextLine textLine in textBlock.lines) {
           for (TextElement textElement in textLine.elements) {
-            _result += textElement.text + " ";
+            //remove all special symbols from string
+            _imageText
+                .add(textElement.text.replaceAll(new RegExp(r'[^\w\s]+'), ''));
           }
         }
+      }
+      //remove duplicates
+      _imageText = _imageText.toSet().toList();
+      for (String item in _imageText) {
+        _callAPI(item);
       }
     });
   }
@@ -91,21 +139,62 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                 ),
               )),
           title: const Text(
-            'Text Recognition',
+            'Medicine Recognition',
             style: TextStyle(fontSize: 17),
           ),
           centerTitle: true,
         ),
         body: Center(
-          child: Padding(
-            padding: EdgeInsets.all(40.0),
-            child: (image == null)
-                ? Icon(
-                    Icons.search,
-                    size: 150,
-                    color: Colors.grey.withOpacity(0.44),
-                  )
-                : Text(_result),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(40.0),
+              child: (image == null)
+                  ? Icon(
+                      Icons.search,
+                      size: 150,
+                      color: Colors.grey.withOpacity(0.44),
+                    )
+                  : Column(
+                      children: [
+                        Text(
+                          "Captured Image",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.purple),
+                        ),
+                        SizedBox(height: 10.0),
+                        Image.file(
+                          image,
+                          width: 140,
+                          height: 192,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(height: 20.0),
+
+                        Text(
+                          "All words found in the image",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.purple),
+                        ),
+                        SizedBox(height: 10.0),
+                        Text(_imageText.toString()),
+                        SizedBox(height: 20.0),
+                        Text(
+                          "Medicine words",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.purple),
+                        ),
+                        SizedBox(height: 10.0),
+                        Text(_drugList.toString()),
+                        // (_drugs.isNotEmpty) ? Text(_drugs) : Text("No data available"),
+                      ],
+                    ),
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
