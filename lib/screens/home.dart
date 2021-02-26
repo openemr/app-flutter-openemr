@@ -5,7 +5,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:openemr/models/user.dart';
 import 'package:openemr/screens/codescanner/codescanner.dart';
 import 'package:openemr/screens/login/login2.dart';
-import 'package:openemr/screens/medicine/medicine_recognition.dart';
+import 'package:openemr/screens/medicine/medicine_recognition_ML_Kit.dart';
 import 'package:openemr/screens/patientList/patient_list.dart';
 import 'package:openemr/screens/ppg/heartRate.dart';
 import 'package:openemr/screens/telehealth/telehealth.dart';
@@ -47,8 +47,8 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'icon': Icons.translate,
-      'title': 'Text Recognition',
-      'route': MedicineRecognitionPage(),
+      'title': 'Medicine Recognition',
+      'route': MedicineRecognitionMLKit(),
     },
     {
       'icon': Icons.scanner,
