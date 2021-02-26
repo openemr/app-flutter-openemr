@@ -17,7 +17,6 @@ class CreateAccount extends StatefulWidget {
 
 class _CreateAccountBuyerState extends State<CreateAccount> {
   final userRef = Firestore.instance.collection('username');
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   bool _isLoading = false;
