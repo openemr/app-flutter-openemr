@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:openemr/screens/telehealth/telehealth.dart';
 import '../../models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseProfileScreen extends StatefulWidget {
+  //user's current display name
+  final String dispName;
+  FirebaseProfileScreen({Key key, @required this.dispName}) : super(key: key);
   @override
   _FirebaseProfileScreenState createState() => _FirebaseProfileScreenState();
 }
@@ -18,6 +23,9 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
   final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _name;
+
+  //decides when to active/inactive spinner indicator
+  bool showSpinner = false;
 
   void _showSnackBar(String text) {
     scaffoldKey.currentState
@@ -35,9 +43,12 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         }
       },
       child: Scaffold(
-          key: scaffoldKey,
-          backgroundColor: GFColors.LIGHT,
-          body: Padding(
+        key: scaffoldKey,
+        backgroundColor: GFColors.LIGHT,
+        body: ModalProgressHUD(
+          // color: Colors.blueAccent,
+          inAsyncCall: showSpinner,
+          child: Padding(
             padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
             child: Center(
               child: SingleChildScrollView(
@@ -55,6 +66,8 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
                       ),
                       SizedBox(
                         child: TextFormField(
+                          //set initial value as the dispName
+                          initialValue: widget.dispName,
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Display name can\'t be blank';
@@ -80,11 +93,17 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
                 ),
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
   void updateProfile(context) async {
+    //start showing the spinner
+    setState(() {
+      showSpinner = true;
+    });
     FirebaseUser user;
     String errorMessage;
     final form = formKey.currentState;
@@ -96,6 +115,10 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         updateInfo.displayName = _name;
         await user.updateProfile(updateInfo);
       } catch (error) {
+        //stop showing the spinner
+        setState(() {
+          showSpinner = false;
+        });
         switch (error.code) {
           case "ERROR_USER_DISABLED":
             errorMessage = "Your acount has been disabled";
@@ -111,6 +134,10 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
       }
     }
     if (errorMessage != null) {
+      //stop showing the spinner
+      setState(() {
+        showSpinner = false;
+      });
       _showSnackBar(errorMessage);
       return null;
     }
@@ -118,6 +145,12 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         .collection('username')
         .document(user.uid)
         .updateData({"name": _name});
-    Navigator.pop(context);
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Telehealth()),
+        (route) => false);
+    //stop showing the spinner
+    setState(() {
+      showSpinner = false;
+    });
   }
 }
