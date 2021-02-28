@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/appbar/gf_appbar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:openemr/utils/wordlistloadingshimmer.dart';
 
 class MedicineRecognitionMLKit extends StatefulWidget {
   @override
@@ -19,9 +19,13 @@ class MedicineRecognitionMLKit extends StatefulWidget {
 class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   var _imageText = [];
   var _drugList = [];
+  var _temp_drugList = [];
   var _selectedDrugList = [];
   File image;
   ImagePicker imagePicker;
+
+  bool _isLoading = false;
+  bool _isLoadingKeywords = false;
 
   String baseURL = "https://dailymed.nlm.nih.gov/dailymed/services";
   String version = "v2";
@@ -31,12 +35,21 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
 
   final scaffoldKey1 = new GlobalKey<ScaffoldState>();
 
-  //decides when to active/inactive spinner indicator
-  bool showSpinner = false;
-
   void _showSnackBar(String text) {
     scaffoldKey1.currentState
         .showSnackBar(new SnackBar(content: new Text(text)));
+  }
+
+  void _toggleLoadingWords(bool newLoadingState) {
+    setState(() {
+      _isLoading = newLoadingState;
+    });
+  }
+
+  void _toggleLoadingKeywords(bool newLoadingState) {
+    setState(() {
+      _isLoadingKeywords = newLoadingState;
+    });
   }
 
   _callAPI(String drugName) async {
@@ -53,15 +66,26 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
             setState(() {
               _drugList.add(drugName);
             });
+
+            // _toggleLoadingKeywords(false);
+
             return true;
+          }else{
+            return false;
           }
-        }
-      }
+        }else{
+            return false;
+          }
+      }else{
+            return false;
+          }
     } on Exception catch (e) {
       setState(() {
         _drugList.clear();
-        showSpinner = false;
       });
+      _toggleLoadingKeywords(false);
+      _showSnackBar("Please check your internet connectivity.");
+
       return false;
     }
   }
@@ -81,6 +105,8 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
         convertImageToText();
       });
     } on Exception catch (e) {
+      _toggleLoadingWords(false);
+      _toggleLoadingKeywords(false);
       _showSnackBar("An unexpected error occured.");
 
       print(e);
@@ -99,13 +125,12 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
       File imageNew = File(pickedFile.path);
       setState(() {
         image = imageNew;
-        convertImageToText().whenComplete(() {showSpinner = false; });
-
+        convertImageToText();
       });
     } on Exception catch (e) {
-      setState(() {
-        showSpinner = false;
-      });
+      _toggleLoadingWords(false);
+      _toggleLoadingKeywords(false);
+
       _showSnackBar("An unexpected error occured.");
 
       print(e);
@@ -132,17 +157,24 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
       }
       //remove duplicates
       _imageText = _imageText.toSet().toList();
+      _toggleLoadingWords(false);
+
       //call the api
       for (String item in _imageText) {
+        // _toggleLoadingKeywords(true);
+
         bool success = _callAPI(item);
         if (!success) {
-          _showSnackBar("Please check your internet connectivity.");
+          _toggleLoadingKeywords(false);
           break;
         }
       }
-      
     });
-
+    setState(() {
+      // _drugList = _temp_drugList;
+      _toggleLoadingKeywords(false);
+    });
+    // _toggleLoadingWords(false);
   }
 
   @override
@@ -174,363 +206,379 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           ),
           centerTitle: true,
         ),
-        body: ModalProgressHUD(
-          // color: Colors.purple,
-          inAsyncCall: showSpinner,
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(40.0),
-                child: (image == null)
-                    ? Icon(
-                        Icons.search,
-                        size: 150,
-                        color: Colors.grey.withOpacity(0.44),
-                      )
-                    : Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  "Captured Image",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.purple),
-                                ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(40.0),
+              child: (image == null)
+                  ? Icon(
+                      Icons.search,
+                      size: 150,
+                      color: Colors.grey.withOpacity(0.44),
+                    )
+                  : Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "Captured Image",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.purple),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 10.0),
-                          Image.file(
-                            image,
-                            width: 140,
-                            height: 192,
-                            fit: BoxFit.fill,
-                          ),
-                          SizedBox(height: 20.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  "All words found in the image",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.purple),
-                                ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        Image.file(
+                          image,
+                          width: 140,
+                          height: 192,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(height: 20.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "All words found in the image",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.purple),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 10.0),
-                          _imageText.length == 0
-                              ? Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: Text(
-                                    "No data available",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.red),
-                                  ),
-                                )
-                              : Container(
-                                  height: _imageText.length < 4
-                                      ? 160.0
-                                      : _imageText.length * 40.0,
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: AlwaysScrollableScrollPhysics(),
-                                      itemCount: _imageText.length,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(height: 10.0),
-                                            RaisedButton(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Icon(Icons.add),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 10,
-                                                    child:
-                                                        Text(_imageText[index]),
-                                                  ),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  final words =
-                                                      _selectedDrugList
-                                                          .firstWhere(
-                                                              (element) =>
-                                                                  element ==
-                                                                  _imageText[
-                                                                      index],
-                                                              orElse: () {
-                                                    return null;
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        _isLoading
+                            ? wordListLoadingShimmer(context,
+                                loadingMessage: 'Filtering words',
+                                listLength: 4)
+                            : _imageText.length == 0
+                                ? Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: Text(
+                                      "No data available",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red),
+                                    ),
+                                  )
+                                : Container(
+                                    height: _imageText.length < 4
+                                        ? 160.0
+                                        : _imageText.length * 40.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        itemCount: _imageText.length,
+                                        itemBuilder: (context, index) {
+                                          return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 10.0),
+                                              RaisedButton(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Icon(Icons.add),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 10,
+                                                      child: Text(
+                                                          _imageText[index]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    final words =
+                                                        _selectedDrugList
+                                                            .firstWhere(
+                                                                (element) =>
+                                                                    element ==
+                                                                    _imageText[
+                                                                        index],
+                                                                orElse: () {
+                                                      return null;
+                                                    });
+                                                    if (words == null) {
+                                                      _selectedDrugList.add(
+                                                          _imageText[index]);
+                                                    }
                                                   });
-                                                  if (words == null) {
-                                                    _selectedDrugList
-                                                        .add(_imageText[index]);
-                                                  }
-                                                });
-                                              },
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0),
+                                                },
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(15.0),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        );
-                                      }),
-                                ),
-                          SizedBox(height: 20.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  "Medicines related keywords",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.purple),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.0),
-                          _drugList.length == 0
-                              ? Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: Text(
-                                    "No data available",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.red),
+                                            ],
+                                          );
+                                        }),
                                   ),
-                                )
-                              : Container(
-                                  height: _drugList.length < 4
-                                      ? 160.0
-                                      : _drugList.length * 40.0,
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: AlwaysScrollableScrollPhysics(),
-                                      itemCount: _drugList.length,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(height: 10.0),
-                                            RaisedButton(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Icon(Icons.add),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 10,
-                                                    child:
-                                                        Text(_drugList[index]),
-                                                  ),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  final drug = _selectedDrugList
-                                                      .firstWhere(
-                                                          (element) =>
-                                                              element ==
-                                                              _drugList[index],
-                                                          orElse: () {
-                                                    return null;
+                        SizedBox(height: 20.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "Medicines related keywords",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.purple),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        // _isLoadingKeywords
+                        //     ? wordListLoadingShimmer(context,
+                        //         loadingMessage: 'Filtering Keywords',
+                        //         listLength: 4)
+                            // : 
+                            _drugList.length == 0
+                                ? Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: Text(
+                                      "No data available",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red),
+                                    ),
+                                  )
+                                : Container(
+                                    height: _drugList.length < 4
+                                        ? 160.0
+                                        : _drugList.length * 40.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        itemCount: _drugList.length,
+                                        itemBuilder: (context, index) {
+                                          return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 10.0),
+                                              RaisedButton(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Icon(Icons.add),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 10,
+                                                      child: Text(
+                                                          _drugList[index]),
+                                                    ),
+                                                  ],
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    final drug =
+                                                        _selectedDrugList
+                                                            .firstWhere(
+                                                                (element) =>
+                                                                    element ==
+                                                                    _drugList[
+                                                                        index],
+                                                                orElse: () {
+                                                      return null;
+                                                    });
+                                                    if (drug == null) {
+                                                      _selectedDrugList.add(
+                                                          _drugList[index]);
+                                                    }
                                                   });
-                                                  if (drug == null) {
-                                                    _selectedDrugList
-                                                        .add(_drugList[index]);
-                                                  }
-                                                });
-                                              },
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0),
+                                                },
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(15.0),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        );
-                                      }),
-                                ),
-                          SizedBox(height: 20.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  "Selected Drug List",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.purple),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.0),
-                          _selectedDrugList.length == 0
-                              ? Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: Text(
-                                    "No data available",
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.red),
+                                            ],
+                                          );
+                                        }),
                                   ),
-                                )
-                              : Container(
-                                  height: _selectedDrugList.length < 4
-                                      ? 160.0
-                                      : _selectedDrugList.length * 40.0,
-                                  margin: const EdgeInsets.only(
-                                      left: 3.0, right: 3.0, bottom: 5.0),
-                                  padding: const EdgeInsets.only(
-                                      top: 3.0,
-                                      left: 17.0,
-                                      right: 17.0,
-                                      bottom: 3.0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Colors.black, width: 1.0)),
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: AlwaysScrollableScrollPhysics(),
-                                      itemCount: _selectedDrugList.length,
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            SizedBox(height: 10.0),
-                                            RaisedButton(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  Expanded(
-                                                    flex: 3,
-                                                    child: Icon(Icons.remove),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 10,
-                                                    child: Text(
-                                                        _selectedDrugList[
-                                                            index]),
-                                                  ),
-                                                ],
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _selectedDrugList.remove(
-                                                      _selectedDrugList[index]);
-                                                });
-                                              },
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0),
+                        SizedBox(height: 20.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                "Selected Drug List",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.purple),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10.0),
+                        _selectedDrugList.length == 0
+                            ? Container(
+                                margin: const EdgeInsets.only(
+                                    left: 3.0, right: 3.0, bottom: 5.0),
+                                padding: const EdgeInsets.only(
+                                    top: 3.0,
+                                    left: 17.0,
+                                    right: 17.0,
+                                    bottom: 3.0),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: Colors.black, width: 1.0)),
+                                child: Text(
+                                  "No data available",
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.red),
+                                ),
+                              )
+                            : Container(
+                                height: _selectedDrugList.length < 4
+                                    ? 160.0
+                                    : _selectedDrugList.length * 40.0,
+                                margin: const EdgeInsets.only(
+                                    left: 3.0, right: 3.0, bottom: 5.0),
+                                padding: const EdgeInsets.only(
+                                    top: 3.0,
+                                    left: 17.0,
+                                    right: 17.0,
+                                    bottom: 3.0),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: Colors.black, width: 1.0)),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemCount: _selectedDrugList.length,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 10.0),
+                                          RaisedButton(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Icon(Icons.remove),
                                                 ),
+                                                Expanded(
+                                                  flex: 10,
+                                                  child: Text(
+                                                      _selectedDrugList[index]),
+                                                ),
+                                              ],
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                _selectedDrugList.remove(
+                                                    _selectedDrugList[index]);
+                                              });
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(15.0),
                                               ),
                                             ),
-                                          ],
-                                        );
-                                      }),
-                                ),
-                          SizedBox(height: 20.0),
-                        ],
-                      ),
-              ),
+                                          ),
+                                        ],
+                                      );
+                                    }),
+                              ),
+                        SizedBox(height: 20.0),
+                        Text(_drugList.toString())
+                      ],
+                    ),
             ),
           ),
+          // ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
@@ -542,7 +590,8 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                 heroTag: null,
                 backgroundColor: GFColors.DARK,
                 onPressed: () async {
-                  showSpinner = true;
+                  _toggleLoadingWords(true);
+                  _toggleLoadingKeywords(true);
                   captureFromCamera();
                 },
                 child: Icon(Icons.camera),
@@ -551,7 +600,8 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                 heroTag: null,
                 backgroundColor: GFColors.DARK,
                 onPressed: () async {
-                  showSpinner = true;
+                  _toggleLoadingWords(true);
+                  _toggleLoadingKeywords(true);
                   chooseFromGalery();
                 },
                 child: Icon(Icons.file_upload),
