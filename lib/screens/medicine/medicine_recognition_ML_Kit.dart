@@ -19,13 +19,14 @@ class MedicineRecognitionMLKit extends StatefulWidget {
 class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   var _imageText = [];
   var _drugList = [];
-  var _temp_drugList = [];
   var _selectedDrugList = [];
   File image;
   ImagePicker imagePicker;
 
   bool _isLoading = false;
   bool _isLoadingKeywords = false;
+  bool _isLoadingImage = false;
+  bool _isBtnNotPressed = true;
 
   String baseURL = "https://dailymed.nlm.nih.gov/dailymed/services";
   String version = "v2";
@@ -52,6 +53,17 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
     });
   }
 
+  void _toggleLoadingImage(bool newLoadingState) {
+    setState(() {
+      _isLoadingImage = newLoadingState;
+    });
+  }
+
+  void _toggleButtonNotPress(bool newLoadingState) {
+    setState(() {
+      _isBtnNotPressed = newLoadingState;
+    });
+  }
   captureFromCamera() async {
     setState(() {
       image = null;
@@ -63,12 +75,15 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           await imagePicker.getImage(source: ImageSource.camera);
       File imageNew = File(pickedFile.path);
       setState(() {
+        _toggleLoadingImage(false);
         image = imageNew;
         convertImageToText();
       });
     } on Exception catch (e) {
       _toggleLoadingWords(false);
       _toggleLoadingKeywords(false);
+      _toggleLoadingImage(false);
+
       _showSnackBar("An unexpected error occured.");
 
       print(e);
@@ -86,12 +101,14 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           await imagePicker.getImage(source: ImageSource.gallery);
       File imageNew = File(pickedFile.path);
       setState(() {
+        _toggleLoadingImage(false);
         image = imageNew;
         convertImageToText();
       });
     } on Exception catch (e) {
       _toggleLoadingWords(false);
       _toggleLoadingKeywords(false);
+      _toggleLoadingImage(false);
 
       _showSnackBar("An unexpected error occured.");
 
@@ -122,65 +139,37 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
       _toggleLoadingWords(false);
 
       //call the api
+      int count = 1;
       for (String item in _imageText) {
-        // _toggleLoadingKeywords(true);
-
-
-        bool success = _callAPI(item);
-        if (!success) {
-          _toggleLoadingKeywords(false);
-          break;
-        }
+        _callAPI(item);
       }
     });
-    setState(() {
-      // _drugList = _temp_drugList;
-      _toggleLoadingKeywords(false);
-    });
-    // _toggleLoadingWords(false);
   }
 
   _callAPI(String drugName) async {
     try {
-      final response = await http.get(
-          '$baseURL/$version/$endpoint\.$format?$parameter_1=$drugName');
-          // 'https://rxnav.nlm.nih.gov/drugs/zPrescribe/rxcui.json?name=$drugName');
-
+      final response = await http
+          .get('$baseURL/$version/$endpoint\.$format?$parameter_1=$drugName');
       print(response);
+      if (drugName == _imageText[_imageText.length - 1]) {
+        _toggleLoadingKeywords(false);
+      }
       if (response.statusCode == 200) {
-        setState(() {
-          
-              _drugList.add(drugName);
-        });
-
         var data = json.decode(response.body);
         if (data.isNotEmpty) {
           int drugCount = data["metadata"]["total_elements"];
           if (drugCount > 0) {
             setState(() {
-              // _drugList.add(drugName);
+              _drugList.add(drugName);
             });
-
-            // _toggleLoadingKeywords(false);
-
-            return true;
-          } else {
-            return false;
           }
-        } else {
-          return false;
         }
-      } else {
-        return false;
       }
     } on Exception catch (e) {
       setState(() {
         _drugList.clear();
       });
       _toggleLoadingKeywords(false);
-      _showSnackBar("Please check your internet connectivity.");
-
-      return false;
     }
   }
 
@@ -217,7 +206,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.all(40.0),
-              child: (image == null)
+              child: (image == null && _isBtnNotPressed)
                   ? Icon(
                       Icons.search,
                       size: 150,
@@ -241,12 +230,16 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                           ],
                         ),
                         SizedBox(height: 10.0),
-                        Image.file(
-                          image,
-                          width: 140,
-                          height: 192,
-                          fit: BoxFit.fill,
-                        ),
+                        _isLoadingImage
+                            ? wordListLoadingShimmer(context,
+                                loadingMessage: 'Getting the image',
+                                listLength: 2)
+                            : Image.file(
+                                image,
+                                width: 140,
+                                height: 192,
+                                fit: BoxFit.fill,
+                              ),
                         SizedBox(height: 20.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -381,100 +374,106 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                           ],
                         ),
                         SizedBox(height: 10.0),
-                        // _isLoadingKeywords
-                        //     ? wordListLoadingShimmer(context,
-                        //         loadingMessage: 'Filtering Keywords',
-                        //         listLength: 4)
-                        // :
-                        _drugList.length == 0
-                            ? Container(
-                                margin: const EdgeInsets.only(
-                                    left: 3.0, right: 3.0, bottom: 5.0),
-                                padding: const EdgeInsets.only(
-                                    top: 3.0,
-                                    left: 17.0,
-                                    right: 17.0,
-                                    bottom: 3.0),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    border: Border.all(
-                                        color: Colors.black, width: 1.0)),
-                                child: Text(
-                                  "No data available",
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.red),
-                                ),
-                              )
-                            : Container(
-                                height: _drugList.length < 4
-                                    ? 160.0
-                                    : _drugList.length * 40.0,
-                                margin: const EdgeInsets.only(
-                                    left: 3.0, right: 3.0, bottom: 5.0),
-                                padding: const EdgeInsets.only(
-                                    top: 3.0,
-                                    left: 17.0,
-                                    right: 17.0,
-                                    bottom: 3.0),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    border: Border.all(
-                                        color: Colors.black, width: 1.0)),
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: AlwaysScrollableScrollPhysics(),
-                                    itemCount: _drugList.length,
-                                    itemBuilder: (context, index) {
-                                      return Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(height: 10.0),
-                                          RaisedButton(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: Icon(Icons.add),
+                        _isLoadingKeywords
+                            ? wordListLoadingShimmer(context,
+                                loadingMessage: 'Filtering Keywords',
+                                listLength: 4)
+                            : _drugList.length == 0
+                                ? Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: Text(
+                                      "No data available",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.red),
+                                    ),
+                                  )
+                                : Container(
+                                    height: _drugList.length < 4
+                                        ? 160.0
+                                        : _drugList.length * 40.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 3.0, right: 3.0, bottom: 5.0),
+                                    padding: const EdgeInsets.only(
+                                        top: 3.0,
+                                        left: 17.0,
+                                        right: 17.0,
+                                        bottom: 3.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.black, width: 1.0)),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics:
+                                            AlwaysScrollableScrollPhysics(),
+                                        itemCount: _drugList.length,
+                                        itemBuilder: (context, index) {
+                                          return Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 10.0),
+                                              RaisedButton(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: <Widget>[
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Icon(Icons.add),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 10,
+                                                      child: Text(
+                                                          _drugList[index]),
+                                                    ),
+                                                  ],
                                                 ),
-                                                Expanded(
-                                                  flex: 10,
-                                                  child: Text(_drugList[index]),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    final drug =
+                                                        _selectedDrugList
+                                                            .firstWhere(
+                                                                (element) =>
+                                                                    element ==
+                                                                    _drugList[
+                                                                        index],
+                                                                orElse: () {
+                                                      return null;
+                                                    });
+                                                    if (drug == null) {
+                                                      _selectedDrugList.add(
+                                                          _drugList[index]);
+                                                    }
+                                                  });
+                                                },
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(15.0),
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                final drug = _selectedDrugList
-                                                    .firstWhere(
-                                                        (element) =>
-                                                            element ==
-                                                            _drugList[index],
-                                                        orElse: () {
-                                                  return null;
-                                                });
-                                                if (drug == null) {
-                                                  _selectedDrugList
-                                                      .add(_drugList[index]);
-                                                }
-                                              });
-                                            },
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                Radius.circular(15.0),
                                               ),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    }),
-                              ),
+                                            ],
+                                          );
+                                        }),
+                                  ),
                         SizedBox(height: 20.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -506,7 +505,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                                     border: Border.all(
                                         color: Colors.black, width: 1.0)),
                                 child: Text(
-                                  "No data available",
+                                  "No selected madicine found",
                                   style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w400,
@@ -573,12 +572,10 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                                     }),
                               ),
                         SizedBox(height: 20.0),
-                        Text(_drugList.toString())
                       ],
                     ),
             ),
           ),
-          // ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
@@ -592,6 +589,8 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                 onPressed: () async {
                   _toggleLoadingWords(true);
                   _toggleLoadingKeywords(true);
+                  _toggleLoadingImage(true);
+                  _toggleButtonNotPress(false);
                   captureFromCamera();
                 },
                 child: Icon(Icons.camera),
@@ -602,6 +601,8 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                 onPressed: () async {
                   _toggleLoadingWords(true);
                   _toggleLoadingKeywords(true);
+                  _toggleLoadingImage(true);
+                  _toggleButtonNotPress(false);
                   chooseFromGalery();
                 },
                 child: Icon(Icons.file_upload),
