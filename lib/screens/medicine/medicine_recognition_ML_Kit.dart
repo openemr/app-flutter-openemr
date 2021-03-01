@@ -52,44 +52,6 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
     });
   }
 
-  _callAPI(String drugName) async {
-    try {
-      final response = await http
-          .get('$baseURL/$version/$endpoint\.$format?$parameter_1=$drugName');
-
-      print(response);
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        if (data.isNotEmpty) {
-          int drugCount = data["metadata"]["total_elements"];
-          if (drugCount > 0) {
-            setState(() {
-              _drugList.add(drugName);
-            });
-
-            // _toggleLoadingKeywords(false);
-
-            return true;
-          }else{
-            return false;
-          }
-        }else{
-            return false;
-          }
-      }else{
-            return false;
-          }
-    } on Exception catch (e) {
-      setState(() {
-        _drugList.clear();
-      });
-      _toggleLoadingKeywords(false);
-      _showSnackBar("Please check your internet connectivity.");
-
-      return false;
-    }
-  }
-
   captureFromCamera() async {
     setState(() {
       image = null;
@@ -163,6 +125,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
       for (String item in _imageText) {
         // _toggleLoadingKeywords(true);
 
+
         bool success = _callAPI(item);
         if (!success) {
           _toggleLoadingKeywords(false);
@@ -175,6 +138,50 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
       _toggleLoadingKeywords(false);
     });
     // _toggleLoadingWords(false);
+  }
+
+  _callAPI(String drugName) async {
+    try {
+      final response = await http.get(
+          '$baseURL/$version/$endpoint\.$format?$parameter_1=$drugName');
+          // 'https://rxnav.nlm.nih.gov/drugs/zPrescribe/rxcui.json?name=$drugName');
+
+      print(response);
+      if (response.statusCode == 200) {
+        setState(() {
+          
+              _drugList.add(drugName);
+        });
+
+        var data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          int drugCount = data["metadata"]["total_elements"];
+          if (drugCount > 0) {
+            setState(() {
+              // _drugList.add(drugName);
+            });
+
+            // _toggleLoadingKeywords(false);
+
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } on Exception catch (e) {
+      setState(() {
+        _drugList.clear();
+      });
+      _toggleLoadingKeywords(false);
+      _showSnackBar("Please check your internet connectivity.");
+
+      return false;
+    }
   }
 
   @override
@@ -378,103 +385,96 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
                         //     ? wordListLoadingShimmer(context,
                         //         loadingMessage: 'Filtering Keywords',
                         //         listLength: 4)
-                            // : 
-                            _drugList.length == 0
-                                ? Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 3.0, right: 3.0, bottom: 5.0),
-                                    padding: const EdgeInsets.only(
-                                        top: 3.0,
-                                        left: 17.0,
-                                        right: 17.0,
-                                        bottom: 3.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                            color: Colors.black, width: 1.0)),
-                                    child: Text(
-                                      "No data available",
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.red),
-                                    ),
-                                  )
-                                : Container(
-                                    height: _drugList.length < 4
-                                        ? 160.0
-                                        : _drugList.length * 40.0,
-                                    margin: const EdgeInsets.only(
-                                        left: 3.0, right: 3.0, bottom: 5.0),
-                                    padding: const EdgeInsets.only(
-                                        top: 3.0,
-                                        left: 17.0,
-                                        right: 17.0,
-                                        bottom: 3.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                            color: Colors.black, width: 1.0)),
-                                    child: ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            AlwaysScrollableScrollPhysics(),
-                                        itemCount: _drugList.length,
-                                        itemBuilder: (context, index) {
-                                          return Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              SizedBox(height: 10.0),
-                                              RaisedButton(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: <Widget>[
-                                                    Expanded(
-                                                      flex: 3,
-                                                      child: Icon(Icons.add),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 10,
-                                                      child: Text(
-                                                          _drugList[index]),
-                                                    ),
-                                                  ],
+                        // :
+                        _drugList.length == 0
+                            ? Container(
+                                margin: const EdgeInsets.only(
+                                    left: 3.0, right: 3.0, bottom: 5.0),
+                                padding: const EdgeInsets.only(
+                                    top: 3.0,
+                                    left: 17.0,
+                                    right: 17.0,
+                                    bottom: 3.0),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: Colors.black, width: 1.0)),
+                                child: Text(
+                                  "No data available",
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.red),
+                                ),
+                              )
+                            : Container(
+                                height: _drugList.length < 4
+                                    ? 160.0
+                                    : _drugList.length * 40.0,
+                                margin: const EdgeInsets.only(
+                                    left: 3.0, right: 3.0, bottom: 5.0),
+                                padding: const EdgeInsets.only(
+                                    top: 3.0,
+                                    left: 17.0,
+                                    right: 17.0,
+                                    bottom: 3.0),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: Colors.black, width: 1.0)),
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemCount: _drugList.length,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 10.0),
+                                          RaisedButton(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Icon(Icons.add),
                                                 ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    final drug =
-                                                        _selectedDrugList
-                                                            .firstWhere(
-                                                                (element) =>
-                                                                    element ==
-                                                                    _drugList[
-                                                                        index],
-                                                                orElse: () {
-                                                      return null;
-                                                    });
-                                                    if (drug == null) {
-                                                      _selectedDrugList.add(
-                                                          _drugList[index]);
-                                                    }
-                                                  });
-                                                },
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(15.0),
-                                                  ),
+                                                Expanded(
+                                                  flex: 10,
+                                                  child: Text(_drugList[index]),
                                                 ),
+                                              ],
+                                            ),
+                                            onPressed: () {
+                                              setState(() {
+                                                final drug = _selectedDrugList
+                                                    .firstWhere(
+                                                        (element) =>
+                                                            element ==
+                                                            _drugList[index],
+                                                        orElse: () {
+                                                  return null;
+                                                });
+                                                if (drug == null) {
+                                                  _selectedDrugList
+                                                      .add(_drugList[index]);
+                                                }
+                                              });
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                Radius.circular(15.0),
                                               ),
-                                            ],
-                                          );
-                                        }),
-                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }),
+                              ),
                         SizedBox(height: 20.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
