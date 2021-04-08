@@ -24,7 +24,6 @@ class _HomePageState extends State<HomePage> {
   final userRef = Firestore.instance.collection('username');
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final firebaseFlag = false;
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   List gfComponents = [
     {
       'icon': CupertinoIcons.heart_solid,
@@ -58,13 +57,12 @@ class _HomePageState extends State<HomePage> {
   ];
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        key: scaffoldKey,
         drawer: DrawerPage(),
         appBar: AppBar(
           backgroundColor: GFColors.DARK,

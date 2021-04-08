@@ -1,23 +1,15 @@
-# OpenEMRv2.1.1
+# OpenEMRv2.2
 
 [OpenEMR](https://open-emr.org) is the most popular open source electronic health records and medical practice management solution. [ONC certified](https://open-emr.org/wiki/index.php/OpenEMR_Wiki_Home_Page#ONC_Ambulatory_EHR_Certification) with international usage, OpenEMR's goal is a superior alternative to its proprietary counterparts.
 
 ## What's New?
 - Warnings has been removed
-- Improved toast error message for firebase
-- `google-services.json` has been added to `.gitignore`
+- Deprecated has been fixed
+- Api has been improved
+- Databse has been added to medical recognition
 
-## Version Info
-`2.1.1` -> Current Version  
-`2.1.2` -> Add Loading screens (Completed)  
-`2.1.3` -> Remove deprecated function (Completed)   
-`2.1.4` -> Error message based on API response (In Progress)  
-`2.2` -> Medicine recognition  
-.  
-.  
-.  
-`3.0` -> All OpenEMR API will be support
-
+## Future Work
+-> Error message based on API response (In Progress)  
 
 ## For Developers
 

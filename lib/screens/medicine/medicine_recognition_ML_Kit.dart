@@ -43,7 +43,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
           }
         }
       }
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       setState(() {
         _drugList.clear();
         _drugList.add("No data available");

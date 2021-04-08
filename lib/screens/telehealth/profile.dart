@@ -21,14 +21,13 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
   User user;
 
   final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _name;
 
   //decides when to active/inactive spinner indicator
   bool showSpinner = false;
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -43,7 +42,6 @@ class _FirebaseProfileScreenState extends State<FirebaseProfileScreen> {
         }
       },
       child: Scaffold(
-        key: scaffoldKey,
         backgroundColor: GFColors.LIGHT,
         body: ModalProgressHUD(
           // color: Colors.blueAccent,
