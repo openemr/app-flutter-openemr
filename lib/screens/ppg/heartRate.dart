@@ -16,7 +16,8 @@ class PPG extends StatefulWidget {
 
 class PPGView extends State<PPG> with SingleTickerProviderStateMixin {
   bool _toggled = false; // toggle button value
-  List<SensorValue> _data = List<SensorValue>(); // array to store the values
+  List<SensorValue> _data =
+      List<SensorValue>.empty(growable: true); // array to store the values
   CameraController _controller;
   double _alpha = 0.3; // factor for the mean value
   AnimationController _animationController;

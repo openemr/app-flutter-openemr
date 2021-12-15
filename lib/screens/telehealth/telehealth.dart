@@ -32,12 +32,11 @@ class _TelehealthState extends State<Telehealth>
   List directory;
   List activeChats;
   TabController tabController;
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -52,14 +51,15 @@ class _TelehealthState extends State<Telehealth>
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
   }
+
   Future<void> _signOut() async {
     await googleSignIn.signOut();
     await _auth.signOut();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('loggedUserId');
-
   }
+
   @override
   deactivate() {
     super.deactivate();
@@ -239,7 +239,7 @@ class _TelehealthState extends State<Telehealth>
   _updateServerIp() async {
     await showDialog<String>(
       context: context,
-      child: new SystemPadding(
+      builder: (_) => new SystemPadding(
         child: new AlertDialog(
           contentPadding: const EdgeInsets.all(16.0),
           content: new Row(
@@ -259,12 +259,12 @@ class _TelehealthState extends State<Telehealth>
             ],
           ),
           actions: <Widget>[
-            new FlatButton(
-                child: const Text('CANCEL'),
+            new TextButton(
+                child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context);
                 }),
-            new FlatButton(
+            new TextButton(
                 child: const Text('Update'),
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
@@ -284,7 +284,6 @@ class _TelehealthState extends State<Telehealth>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        key: scaffoldKey,
         appBar: AppBar(
           backgroundColor: GFColors.DARK,
           leading: InkWell(

@@ -31,7 +31,7 @@ class RestDatasource {
         .get(baseUrl + patientendpoint, headers: headers)
         .then((dynamic res) {
       if (res == null) throw new Exception("Error fetching data");
-      var patientList = new List<Patient>();
+      var patientList = new List<Patient>.empty(growable: true);
       if (res["data"] != null) {
         res = res["data"];
       }

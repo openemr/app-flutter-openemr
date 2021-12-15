@@ -37,8 +37,8 @@ class _ChatScreenState extends State<ChatScreen> {
   ChatUser chatUser;
   final picker = ImagePicker();
 
-  List<ChatMessage> messages = List<ChatMessage>();
-  var m = List<ChatMessage>();
+  List<ChatMessage> messages = List<ChatMessage>.empty(growable: true);
+  var m = List<ChatMessage>.empty(growable: true);
 
   var i = 0;
 
@@ -200,7 +200,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     IconButton(
                       icon: Icon(Icons.photo),
                       onPressed: () async {
-                           final pickedFile = await picker.getImage(
+                        final pickedFile = await picker.getImage(
                           source: ImageSource.gallery,
                           imageQuality: 80,
                           maxHeight: 400,

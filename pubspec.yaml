@@ -1,7 +1,7 @@
 name: openemr
 description: A new Flutter project.
 
-version: 2.1.1+4
+version: 2.2+5
 
 environment:
   sdk: '>=2.3.0 <3.0.0'
@@ -10,7 +10,7 @@ dependencies:
   json_store: ^1.1.0
   flutter:
     sdk: flutter
-  getwidget: ^1.1.0
+  getwidget: ^1.2.4
   webview_flutter: ^0.3.19+6
   cupertino_icons: ^0.1.2
   charts_flutter: ^0.9.0

@@ -16,11 +16,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _username, _password, _url;
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -39,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
-          key: scaffoldKey,
           backgroundColor: GFColors.LIGHT,
           body: Padding(
             padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),
