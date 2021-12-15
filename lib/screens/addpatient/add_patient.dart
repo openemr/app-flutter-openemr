@@ -15,7 +15,6 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   User user;
 
   final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _title = "Mr.",
       _fname,
       _mname,
@@ -54,7 +53,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   }
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -68,7 +67,6 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         }
       },
       child: Scaffold(
-        key: scaffoldKey,
         appBar: AppBar(
           title: Text('Add Patient'),
           backgroundColor: Colors.black,

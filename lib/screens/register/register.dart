@@ -26,11 +26,10 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
   bool _isLoading = false;
 
   final formKey = new GlobalKey<FormState>();
-  final scaffoldKey = new GlobalKey<ScaffoldState>();
   String _email, _password, _name, _userid;
 
   void _showSnackBar(String text) {
-    scaffoldKey.currentState
+    ScaffoldMessenger.of(context)
         .showSnackBar(new SnackBar(content: new Text(text)));
   }
 
@@ -51,7 +50,6 @@ class _RegisterFirebaseScreenState extends State<RegisterFirebaseScreen> {
         }
       },
       child: Scaffold(
-          key: scaffoldKey,
           backgroundColor: GFColors.LIGHT,
           body: Padding(
             padding: EdgeInsets.only(left: width * 0.1, right: width * 0.1),

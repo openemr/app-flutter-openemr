@@ -34,17 +34,7 @@ class _MedicineRecognitionMLKitState extends State<MedicineRecognitionMLKit> {
   String format = "json";
   String parameter_1 = "drug_name";
 
-  final scaffoldKey1 = new GlobalKey<ScaffoldState>();
 
-  void _showSnackBar(String text) {
-    scaffoldKey1.currentState
-        .showSnackBar(new SnackBar(content: new Text(text)));
-  }
-
-  void _toggleLoadingWords(bool newLoadingState) {
-    setState(() {
-      _isLoading = newLoadingState;
-    });
   }
 
   void _toggleLoadingKeywords(bool newLoadingState) {
